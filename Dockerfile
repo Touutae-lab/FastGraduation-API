@@ -13,6 +13,5 @@ RUN python setup.py install build
 
 EXPOSE 5000
 
-ENTRYPOINT python setup.py build_sphinx
 CMD flask run --reload
 
