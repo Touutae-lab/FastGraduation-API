@@ -4,6 +4,9 @@ import redis
 
 
 def get_hit_count(cache: redis.Redis):
+    """
+    I'm get_hit_count
+    """
     retries: int = 5
     while True:
         try:
