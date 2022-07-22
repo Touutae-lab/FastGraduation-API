@@ -5,7 +5,7 @@ WORKDIR /code
 
 COPY . .
 
-ENV FLASK_APP=src/app.py
+ENV FLASK_APP=fastgrad_api/app.py
 ENV FLASK_RUN_HOST=0.0.0.0
 
 RUN apk add --no-cache gcc musl-dev linux-headers
