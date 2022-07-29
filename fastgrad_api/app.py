@@ -27,7 +27,7 @@ init(
     ),
     supertokens_config=SupertokensConfig(
         # try.supertokens.com is for demo purposes. Replace this with the address of your core instance (sign up on supertokens.com), or self host a core.
-        connection_uri="http://localhost:3567",
+        connection_uri="http://supertokens:3567",
         # api_key="IF YOU HAVE AN API KEY FOR THE CORE, ADD IT HERE"
     ),
     framework='flask',
