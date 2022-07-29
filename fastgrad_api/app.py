@@ -5,9 +5,9 @@ The core module of the project.
 """
 import core
 from flask import Flask
-
+from supertokens_python.recipe.session import SessionContainer
 from supertokens_python import get_all_cors_headers
-from flask import Flask, abort
+from flask import Flask, abort, g
 from flask_cors import CORS 
 from supertokens_python.framework.flask import Middleware
 from supertokens_python import init, InputAppInfo, SupertokensConfig
@@ -101,3 +101,11 @@ def hee():
     """
     return "CMU SO FUN"
 
+@app.route('/update-jwt', methods=['POST']) 
+@verify_session()
+def like_comment():
+    session: SessionContainer = g.supertokens 
+
+    user_id = session.get_user_id()
+
+    print(user_id)
