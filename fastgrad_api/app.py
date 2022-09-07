@@ -18,6 +18,8 @@ from supertokens_python.recipe import emailpassword, session
 from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.flask import verify_session
 
+# from core import get_hit_count
+
 init(
     app_info=InputAppInfo(
         app_name="App",
@@ -40,13 +42,13 @@ init(
 app: Flask = Flask(__name__)
 Middleware(app)
 
-
 CORS(
     app=app,
     origins=config["origins"],
     supports_credentials=True,
     allow_headers=["Content-Type"] + get_all_cors_headers(),
 )
+
 
 # This is required since if this is not there, then OPTIONS requests for
 # the APIs exposed by the supertokens' Middleware will return a 404
