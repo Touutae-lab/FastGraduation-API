@@ -3,7 +3,10 @@
 
 name: Code Format and Lint checking
 
-on: [push]
+on:
+  push:
+    paths:
+      - '**.py'
 
 permissions:
   contents: read
