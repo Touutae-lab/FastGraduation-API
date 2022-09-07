@@ -57,6 +57,8 @@ def catch_all(u_path: str):
 
 
 # TODO: Add API Routes
+
+
 @app.route("/sessioninfo", methods=["GET"])  # type: ignore
 @verify_session()
 def get_session_info():
