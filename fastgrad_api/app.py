@@ -3,6 +3,8 @@ app.py
 ====================================
 The core module of the project.
 """
+import course
+from config import config
 from flask import Flask, abort, g, jsonify
 from flask_cors import CORS
 from supertokens_python import (
@@ -27,9 +29,7 @@ init(
         website_base_path="/auth",
     ),
     supertokens_config=SupertokensConfig(
-        # try.supertokens.com is for demo purposes. Replace this with the address of your core instance (sign up on supertokens.com), or self host a core.
-        connection_uri="http://localhost:3567",
-        # api_key="IF YOU HAVE AN API KEY FOR THE CORE, ADD IT HERE"
+        connection_uri="http://supertokens:3567",
     ),
     framework="flask",
     recipe_list=[
@@ -39,13 +39,12 @@ init(
 )
 
 
-app = Flask(__name__)
+app: Flask = Flask(__name__)
 Middleware(app)
 
-# TODO: Add APIs
 CORS(
     app=app,
-    origins=["http://localhost:3000"],
+    origins=config["origins"],
     supports_credentials=True,
     allow_headers=["Content-Type"] + get_all_cors_headers(),
 )
@@ -59,15 +58,9 @@ def catch_all(u_path: str):
     abort(404)
 
 
-# def login():
-#     core.login
-#     """
-#     Return the Session info
-#     ----------
-#     your_name
-#         A string indicating the name of the person.
-#     """
-#     return "kuy"
+# TODO: Add API Routes
+
+
 @app.route("/sessioninfo", methods=["GET"])  # type: ignore
 @verify_session()
 def get_session_info():
@@ -81,16 +74,6 @@ def get_session_info():
     )
 
 
-# def login():
-#     core.login
-#     """
-#     Return the most important thing about a person.
-#     Parameters
-#     ----------
-#     your_name
-#         A string indicating the name of the person.
-#     """
-#     return "kuy"
 @app.route("/hee")
 def hee():
     """
@@ -107,7 +90,9 @@ def hee():
 @verify_session()
 def like_comment():
     session: SessionContainer = g.supertokens
-
     user_id = session.get_user_id()
 
-    print(user_id)
+    return user_id
+
+
+app.register_blueprint(course.test_blueprint)

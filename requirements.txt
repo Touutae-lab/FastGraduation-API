@@ -1,3 +1,5 @@
 flask
-supertokens-python
 flask-cors
+mysql.connector
+pyyaml
+supertokens-python
