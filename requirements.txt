@@ -1,5 +1,7 @@
+bluepy
+sphinx_rtd_theme > 0.3.0
 flask
 flask-cors
 mysql.connector
 pyyaml
-supertokens-python
+supertokens-python >= 0.10

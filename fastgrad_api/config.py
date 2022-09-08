@@ -8,6 +8,6 @@ try:
 except ImportError:
     from yaml import Loader
 
-_stream: TextIOWrapper = open("config.yaml", "r", encoding="utf-8")
+_stream: TextIOWrapper = open("../config.yaml", "r", encoding="utf-8")
 config: Any = load(_stream, Loader=Loader)
 print(config)

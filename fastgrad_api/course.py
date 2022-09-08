@@ -1,6 +1,7 @@
 import mysql.connector
-from config import config
 from flask import Blueprint
+
+from .config import config
 
 test_blueprint: Blueprint = Blueprint("test_blueprint", __name__)
 
