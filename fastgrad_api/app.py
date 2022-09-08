@@ -3,8 +3,6 @@ app.py
 ====================================
 The core module of the project.
 """
-from . import course
-from .config import config
 from flask import Flask, abort, g, jsonify
 from flask_cors import CORS
 from supertokens_python import (
@@ -17,6 +15,9 @@ from supertokens_python.framework.flask import Middleware
 from supertokens_python.recipe import emailpassword, session
 from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.flask import verify_session
+
+from . import course
+from .config import config
 
 # from core import get_hit_count
 
@@ -72,7 +73,6 @@ def get_session_info():
             "accessTokenPayload": session_.get_access_token_payload(),
         }
     )
-
 
 
 @app.route("/update-jwt", methods=["POST"])
