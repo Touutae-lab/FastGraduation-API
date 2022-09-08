@@ -9,8 +9,10 @@ Welcome to FastGraduation API's documentation!
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
-
-
+.. automodule:: fastgrad_api.app
+   :members:
+   :undoc-members:
+   :show-inheritance: 
 
 Indices and tables
 ==================

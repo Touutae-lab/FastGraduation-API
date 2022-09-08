@@ -3,8 +3,8 @@ app.py
 ====================================
 The core module of the project.
 """
-import course
-from config import config
+from . import course
+from .config import config
 from flask import Flask, abort, g, jsonify
 from flask_cors import CORS
 from supertokens_python import (
@@ -73,17 +73,6 @@ def get_session_info():
         }
     )
 
-
-@app.route("/hee")
-def hee():
-    """
-    Return the most important thing about a person.
-    Parameters
-    ----------
-    your_name
-        A string indicating the name of the person.
-    """
-    return "CMU SO FUN"
 
 
 @app.route("/update-jwt", methods=["POST"])
