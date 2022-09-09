@@ -3,6 +3,8 @@ app.py
 ====================================
 The core module of the project.
 """
+import config
+import course
 from flask import Flask, abort, g, jsonify
 from flask_cors import CORS
 from supertokens_python import (
@@ -15,9 +17,6 @@ from supertokens_python.framework.flask import Middleware
 from supertokens_python.recipe import emailpassword, session
 from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.flask import verify_session
-
-from . import course
-from .config import config
 
 # from core import get_hit_count
 
@@ -45,7 +44,7 @@ Middleware(app)
 
 CORS(
     app=app,
-    origins=config["origins"],
+    origins=config.config["origins"],
     supports_credentials=True,
     allow_headers=["Content-Type"] + get_all_cors_headers(),
 )
