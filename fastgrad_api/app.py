@@ -1,7 +1,7 @@
 """
-app.py
+Getting Started
 ====================================
-The core module of the project.
+
 """
 from flask import Flask, abort, g, jsonify
 from flask_cors import CORS
