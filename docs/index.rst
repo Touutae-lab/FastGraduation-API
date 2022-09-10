@@ -6,39 +6,28 @@
 FastGraduation API
 ==============================================
 
-This is Documentation for FastGraduation-API Source code available at `GitHub
-<https://github.com/Touutae-lab/FastGraduation-API>`_.
-This software relies on Many service i recommend to use `Docker Compose <https://github.com/Touutae-lab/FastGraduation-DockerCompose>`_
 
-If you are using this please Star my project,
-This project under `License <https://github.com/Touutae-lab/FastGraduation-DockerCompose/blob/main/LICENSE>`_. Feel free to edit modification and use.
+This software has development in order planing and suggesting the short and reliable pathway for the user to graduate
+from the Bechelor Degree of Computer Science, Chaingmai University. 
+ 
+   This is Documentation for FastGraduation API Source code available at `GitHub <https://github.com/Touutae-lab/FastGraduation-API>`_. 
 
-Special thanks to,
 
-`Pantakan kanprawet <https://github.com/Touutae-lab>`_ Project lead (Full-Stack Developer),
-
-`Saksikarn Pethkuljinda <https://github.com/Touutae-lab>`_ Project lead (Full-Stack Developer),
-
-`Phornphitak Rotkhian <https://github.com/Touutae-lab>`_ Data engineering,
-
-`Porramin Srithong <https://github.com/Touutae-lab>`_ Backend Developer,
-
-`Thanawin Vairun <https://github.com/Touutae-lab>`_ UX/UI Design,
-
-`Ponlakrit Parasakard <https://github.com/Touutae-lab>`_ Front-End Developer,
-
+All right Reserved Check `License <https://github.com/Touutae-lab/FastGraduation-DockerCompose/blob/main/LICENSE>`_ for more information.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
-.. automodule:: fastgrad_api.app
-   :members:
-   :undoc-members:
-   :show-inheritance: 
+   :hidden:
 
-Indices and tables
-==================
+   install
+   docs
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+Contributor
+===========
+
+- `Pantakan kanprawet <https://github.com/Touutae-lab>`_ Project lead (Full-Stack Developer)
+- `Saksikarn Pethkuljinda <https://github.com/dward2nd>`_ Project lead (Full-Stack Developer)
+- `Phornphitak Rotkhian <https://github.com/Ph0pz>`_ Data engineering
+- `Porramin Srithong <https://github.com/NickP-real>`_ Backend Developer
+- `Thanawin Vairun <https://github.com/th9s>`_ UX/UI Design
+- `Ponlakrit Parasakard <https://github.com/NickP-real>`_ Front-End Developer

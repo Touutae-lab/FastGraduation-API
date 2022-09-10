@@ -1,7 +1,7 @@
 """
-app.py
+Getting Started
 ====================================
-The core module of the project.
+
 """
 import config
 import course

@@ -1,0 +1,5 @@
+
+.. automodule:: fastgrad_api.app
+   :members:
+   :undoc-members:
+   :show-inheritance: 
