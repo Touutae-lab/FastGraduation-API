@@ -1,6 +1,8 @@
 black
+bluepy
 flake8
 isort
 pre-commit
 pytest
 sphinx
+sphinx_rtd_theme > 0.3.0
