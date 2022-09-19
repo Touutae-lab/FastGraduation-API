@@ -3,6 +3,9 @@ Getting Started
 ====================================
 
 """
+import admin
+import config
+import student
 from flask import Flask, abort, g, jsonify
 from flask_cors import CORS
 from supertokens_python import (
@@ -15,9 +18,6 @@ from supertokens_python.framework.flask import Middleware
 from supertokens_python.recipe import emailpassword, session
 from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.flask import verify_session
-
-from . import course
-from .config import config
 
 # from core import get_hit_count
 
@@ -45,11 +45,14 @@ Middleware(app)
 
 CORS(
     app=app,
-    origins=config["origins"],
+    origins=config.config["origins"],
     supports_credentials=True,
     allow_headers=["Content-Type"] + get_all_cors_headers(),
 )
 
+# ********** BLUEPRINT REGISTERING **********
+app.register_blueprint(admin.blueprint, url_prefix="/admin")
+app.register_blueprint(student.blueprint, url_prefix="/student")
 
 # This is required since if this is not there, then OPTIONS requests for
 # the APIs exposed by the supertokens' Middleware will return a 404
@@ -82,6 +85,3 @@ def like_comment():
     user_id = session.get_user_id()
 
     return user_id
-
-
-app.register_blueprint(course.test_blueprint)
