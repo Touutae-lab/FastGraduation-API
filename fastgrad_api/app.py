@@ -8,6 +8,7 @@ import config
 import student
 from flask import Flask, abort, g, jsonify
 from flask_cors import CORS
+from supertokens import override_email_password_apis
 from supertokens_python import (
     InputAppInfo,
     SupertokensConfig,
@@ -16,10 +17,9 @@ from supertokens_python import (
 )
 from supertokens_python.framework.flask import Middleware
 from supertokens_python.recipe import emailpassword, session
+from supertokens_python.recipe.emailpassword import InputFormField
 from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.flask import verify_session
-
-# from core import get_hit_count
 
 init(
     app_info=InputAppInfo(
@@ -34,15 +34,32 @@ init(
     ),
     framework="flask",
     recipe_list=[
+        emailpassword.init(
+            sign_up_feature=emailpassword.InputSignUpFeature(
+                form_fields=[
+                    InputFormField(
+                        id="student_id",
+                        validate=lambda x: len(x) == 9 and x.isdigit(),
+                    ),
+                    InputFormField(id="fname_th"),
+                    InputFormField(id="mname_th", optional=True),
+                    InputFormField(id="lname_th"),
+                    InputFormField(id="fname_en"),
+                    InputFormField(id="mname_en", optional=True),
+                    InputFormField(id="lname_en"),
+                ]
+            ),
+            override=emailpassword.InputOverrideConfig(
+                apis=override_email_password_apis
+            ),
+        ),
         session.init(),  # initializes session features
-        emailpassword.init(),
     ],
 )
 
 
 app: Flask = Flask(__name__)
 Middleware(app)
-
 CORS(
     app=app,
     origins=config.config["origins"],
@@ -60,9 +77,6 @@ app.register_blueprint(student.blueprint, url_prefix="/student")
 @app.route("/<path:u_path>")
 def catch_all(u_path: str):
     abort(404)
-
-
-# TODO: Add API Routes
 
 
 @app.route("/sessioninfo", methods=["GET"])  # type: ignore
