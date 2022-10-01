@@ -3,6 +3,9 @@ Getting Started
 ====================================
 
 """
+
+import test
+
 import admin
 import config
 import student
@@ -37,10 +40,7 @@ init(
         emailpassword.init(
             sign_up_feature=emailpassword.InputSignUpFeature(
                 form_fields=[
-                    InputFormField(
-                        id="student_id",
-                        validate=lambda x: len(x) == 9 and x.isdigit(),
-                    ),
+                    InputFormField(id="student_id"),
                     InputFormField(id="fname_th"),
                     InputFormField(id="mname_th", optional=True),
                     InputFormField(id="lname_th"),
@@ -59,6 +59,7 @@ init(
 
 
 app: Flask = Flask(__name__)
+
 Middleware(app)
 CORS(
     app=app,
@@ -70,6 +71,7 @@ CORS(
 # ********** BLUEPRINT REGISTERING **********
 app.register_blueprint(admin.blueprint, url_prefix="/admin")
 app.register_blueprint(student.blueprint, url_prefix="/student")
+app.register_blueprint(test.blueprint, url_prefix="/test")
 
 # This is required since if this is not there, then OPTIONS requests for
 # the APIs exposed by the supertokens' Middleware will return a 404
