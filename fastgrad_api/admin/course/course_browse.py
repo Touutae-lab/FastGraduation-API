@@ -11,8 +11,8 @@ async def browse_course() -> dict:
     if "q" in params:
         query += (
             f" WHERE id LIKE '%{params['q']}%' OR name_th LIKE "
-            f"'%{params['q']}%' OR name_en LIKE '%{params['q']}%'"
-            f"OR description_th LIKE '%{params['q']}%' OR description_en '%{params['q']}%'"
+            f"'%{params['q']}%' OR name_en LIKE '%{params['q']}%' "
+            f" OR description_th LIKE '%{params['q']}%' OR description_en LIKE'%{params['q']}%'"
         )
 
     cursor = db.cursor()
@@ -31,6 +31,6 @@ async def browse_course() -> dict:
                 "description_th": description_th,
                 "description_en": description_en,
             }
-            for course_id, course_name_th, course_name_en, description_th, description_en, *_ in result
+            for course_id, course_name_th, course_name_en, credit, description_th, description_en, *_ in result
         ],
     }
