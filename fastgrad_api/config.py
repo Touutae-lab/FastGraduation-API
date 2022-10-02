@@ -1,5 +1,5 @@
 from io import TextIOWrapper
-from typing import Any
+from typing import Any, Dict, Literal
 
 from yaml import load
 
@@ -8,5 +8,9 @@ try:
 except ImportError:
     from yaml import Loader
 
-_stream: TextIOWrapper = open("./config.yaml", "r", encoding="utf-8")
-config: Any = load(_stream, Loader=Loader)
+config: Dict[str, Any] = {}
+
+# if config.yaml exists, read from config.yaml
+CONFIG_YAML: Literal["config.yaml"] = "config.yaml"
+_stream: TextIOWrapper = open(f"./{CONFIG_YAML}", mode="r", encoding="utf-8")
+config = load(_stream, Loader=Loader)

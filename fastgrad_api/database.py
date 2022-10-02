@@ -1,4 +1,4 @@
-from typing import Any, Dict, Final, List, Union
+from typing import Any, Dict, Final, List, Tuple, Union
 
 import config
 import mysql.connector
@@ -36,6 +36,39 @@ QUERY: Final[Dict[str, str]] = {
 }
 
 
+def delete(
+    table: str,
+    where: Union[Dict[str, Any], str],
+    whereargs: Union[List[Any], None] = None,
+    database: str = config.config["mysql"]["database"],
+):
+    """
+    ::example::
+
+    ```python
+    import database
+
+
+    delete("student", {"student_id": 630510600})
+    ```
+    """
+    cursor = db.cursor()
+
+    where_str, valargs = _where_str(where, whereargs)
+    status = cursor.execute(
+        QUERY["delete"]
+        % {
+            "database": database,
+            "table": table,
+            "where": where_str,
+        },
+        valargs,
+    )
+    db.commit()
+
+    return status
+
+
 def insert(
     table: str,
     data: Dict[str, Any],
@@ -48,7 +81,7 @@ def insert(
     import database
 
 
-    await insert(
+    insert(
         "student",
         {
             "user_id": "3fbed483-e7be-4d3d-8d20-c17c6c526794",
@@ -92,7 +125,7 @@ def update(
     import database
 
 
-    await update(
+    update(
         "student",
         data={"academic_year": 2022},
         where={"student_id": 630510600}
@@ -106,21 +139,8 @@ def update(
     set_statements: str = ", ".join((f"{col} = %s" for col in data))
     valargs.extend(data.values())
 
-    where_str: str = (
-        where
-        if isinstance(where, str)
-        else " AND ".join((f"{col} = %s" for col in where))
-    )
+    where_str, whereargs = _where_str(where, whereargs)
 
-    print(
-        QUERY["update"]
-        % {
-            "database": database,
-            "table": table,
-            "set_statements": set_statements,
-            "where": where_str,
-        }
-    )
     if isinstance(where, dict):
         valargs.extend(list(where.values()))
     else:
@@ -141,5 +161,21 @@ def update(
     return status
 
 
-if __name__ == "__main__":
-    print("This is the file just for database object.")
+def _where_str(
+    where: Union[Dict[str, Any], str],
+    whereargs: Union[List[Any], None] = None,
+) -> Tuple[str, List[Any]]:
+
+    where_str: str = (
+        where
+        if isinstance(where, str)
+        else " AND ".join((f"{col} = %s" for col in where))
+    )
+    valargs: List[Any] = []
+
+    if isinstance(where, dict):
+        valargs.extend(list(where.values()))
+    else:
+        valargs.extend(whereargs)
+
+    return where_str, valargs

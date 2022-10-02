@@ -1,8 +1,10 @@
-from datetime import datetime
-from typing import Any, Dict, List, Union
+import re
+from typing import Any, Awaitable, Callable, Dict, List, Union
 
+import config
 import database
 from supertokens_python.asyncio import delete_user
+from supertokens_python.recipe.emailpassword import InputFormField
 from supertokens_python.recipe.emailpassword.interfaces import (
     APIInterface,
     APIOptions,
@@ -11,6 +13,80 @@ from supertokens_python.recipe.emailpassword.interfaces import (
 )
 from supertokens_python.recipe.emailpassword.types import FormField
 from supertokens_python.types import GeneralErrorResponse
+
+
+def _validator(
+    pattern: Union[str, re.Pattern[str]],
+    invalid_msg: str,
+    optional: bool = False,
+) -> Callable[[str], Awaitable[Union[str, None]]]:
+    async def wrapper(value: Any) -> Union[str, None]:
+        if optional and value == "":
+            return None
+        if not isinstance(value, str) or re.fullmatch(pattern, value) is None:
+            return invalid_msg
+        return None
+
+    return wrapper
+
+
+def _thai_validator(
+    optional: bool = False,
+) -> Callable[[str], Awaitable[Union[str, None]]]:
+    return _validator(
+        r"^[ก-๙]+$", "Invalid value; the field must be Thai.", optional
+    )
+
+
+def _eng_validator(
+    optional: bool = False,
+) -> Callable[[str], Awaitable[Union[str, None]]]:
+    return _validator(
+        r"^[A-Za-z-]+$", "Invalid value; the field must be English.", optional
+    )
+
+
+async def _student_id_validator(value: Any) -> Union[str, None]:
+    if (
+        not isinstance(value, str)
+        or re.fullmatch(r"^[0-9]{9}$", value) is None
+    ):
+        return "Invalid student ID format; it must be 9-digit value."
+
+    cursor = database.db.cursor()
+    database_name = config.config["mysql"]["database"]
+
+    cursor.execute(
+        (
+            f"SELECT `student_id` "
+            f"FROM `{database_name}`.`student` "
+            f"WHERE `student_id` = %s"
+        ),
+        [value],
+    )
+
+    if cursor.fetchall():
+        return "The student ID exists in the database."
+
+    return None
+
+
+signup_formfields: List[InputFormField] = [
+    InputFormField(
+        id="student_id",
+        validate=_student_id_validator,
+    ),
+    InputFormField(id="fname_th", validate=_thai_validator()),
+    InputFormField(
+        id="mname_th", validate=_thai_validator(True), optional=True
+    ),
+    InputFormField(id="lname_th", validate=_thai_validator()),
+    InputFormField(id="fname_en", validate=_eng_validator()),
+    InputFormField(
+        id="mname_en", validate=_eng_validator(True), optional=True
+    ),
+    InputFormField(id="lname_en", validate=_eng_validator()),
+]
 
 
 def override_email_password_apis(
@@ -59,25 +135,23 @@ def override_email_password_apis(
                     if field.id in data_student.keys():
                         data_student[field.id] = field.value
 
-                # if data_user["mname_en"] == "":
-                #     data_user["mname_en"] = None
-                # if data_user["mname_th"] == "":
-                #     data_user["mname_th"] = None
+                if data_user["mname_en"] == "":
+                    del data_user["mname_en"]
+                if data_user["mname_th"] == "":
+                    del data_user["mname_th"]
 
                 data_user["user_id"] = user_id
                 data_student["user_id"] = user_id
 
                 data_user["type"] = 1
                 data_student["academic_year"] = (
-                    datetime.now().year
-                    - int("25" + data_student["student_id"][:2])
-                    - 542
+                    int("25" + data_student["student_id"][:2]) - 543
                 )
 
                 # Add to user table
-                await database.insert("user", data_user)
+                database.insert("user", data_user)
                 # Add to student table
-                await database.insert("student", data_student)
+                database.insert("student", data_student)
 
             except Exception as e:
                 # revert the action if user data are not complete

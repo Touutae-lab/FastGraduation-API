@@ -11,7 +11,7 @@ import config
 import student
 from flask import Flask, abort, g, jsonify
 from flask_cors import CORS
-from supertokens import override_email_password_apis
+from supertokens import override_email_password_apis, signup_formfields
 from supertokens_python import (
     InputAppInfo,
     SupertokensConfig,
@@ -20,7 +20,6 @@ from supertokens_python import (
 )
 from supertokens_python.framework.flask import Middleware
 from supertokens_python.recipe import emailpassword, session
-from supertokens_python.recipe.emailpassword import InputFormField
 from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.flask import verify_session
 
@@ -39,15 +38,7 @@ init(
     recipe_list=[
         emailpassword.init(
             sign_up_feature=emailpassword.InputSignUpFeature(
-                form_fields=[
-                    InputFormField(id="student_id"),
-                    InputFormField(id="fname_th"),
-                    InputFormField(id="mname_th", optional=True),
-                    InputFormField(id="lname_th"),
-                    InputFormField(id="fname_en"),
-                    InputFormField(id="mname_en", optional=True),
-                    InputFormField(id="lname_en"),
-                ]
+                form_fields=signup_formfields
             ),
             override=emailpassword.InputOverrideConfig(
                 apis=override_email_password_apis
@@ -101,3 +92,7 @@ def like_comment():
     user_id = session.get_user_id()
 
     return user_id
+
+
+if __name__ == "__main__":
+    app.run()
