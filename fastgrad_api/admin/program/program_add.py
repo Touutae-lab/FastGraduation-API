@@ -1,7 +1,7 @@
 from database import db
 from flask import Blueprint, request
 
-from .Utility_Function_program import checkyear, nonecheck
+from ..Utility_Function import validate
 
 blueprint: Blueprint = Blueprint("program_add", __name__)
 
@@ -12,16 +12,13 @@ async def program_add() -> dict:
     msg = "ok"
     datas = request.get_json()
     results = []
-    listyear = ["start_year", "end_year"]
-    listpro = ["name_th", "name_en"]
+    listpro = ["start_year", "end_year", "name_th", "name_en"]
 
-    status, msg = checkyear(listyear, datas)
-    if not status:  # ถ้าไม่ถูกให้ returnfalse พร้อม สาเหตุ
-        return msg
-    status, msg = nonecheck(listpro, datas)
+    status, msg = validate(listpro, datas)
     if not status:  # ถ้าไม่ถูกให้ returnfalse พร้อม สาเหตุ
         return msg
 
+    # find max index
     index_program = """SELECT max(id)+1 as maxid FROM program"""
     cursor = db.cursor()
     cursor.execute(index_program)

@@ -1,7 +1,7 @@
 from database import db
 from flask import Blueprint, request
 
-from .Utility_Function_program import checkyear, nonecheck
+from ..Utility_Function import validate
 
 blueprint: Blueprint = Blueprint("program_edit", __name__)
 
@@ -11,14 +11,10 @@ async def program_browse(program_id) -> dict:
     status = "success"
     msg = "ok"
     results = []
-    listyear = ["start_year", "end_year"]
-    listpro = ["name_th", "name_en"]
+    tag_list = ["year_start", "year_end", "name_th", "name_en"]
     datas = request.get_json()
 
-    status, msg = checkyear(listyear, datas)
-    if not status:  # ถ้าไม่ถูกให้ returnfalse พร้อม สาเหตุ
-        return msg
-    status, msg = nonecheck(listpro, datas)
+    status, msg = validate(tag_list, datas)
     if not status:  # ถ้าไม่ถูกให้ returnfalse พร้อม สาเหตุ
         return msg
 
@@ -34,7 +30,7 @@ async def program_browse(program_id) -> dict:
         cursor = db.cursor()
         cursor.execute(query, results)
         db.commit()
-
+        cursor = db.cursor()
         query = """select * from program where id=""" + str(program_id)
         cursor.execute(query)
         result = cursor.fetchall()

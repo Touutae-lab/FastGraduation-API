@@ -1,7 +1,7 @@
 from database import db
 from flask import Blueprint, request
 
-from .Utility_Function import checklanguage
+from ..Utility_Function import validate
 
 blueprint: Blueprint = Blueprint("student_edit", __name__)
 
@@ -11,8 +11,15 @@ async def student_browse(student_id) -> dict:
     status = "success"
     msg = "ok"
 
-    en_list = ["fname_en", "mname_en", "lname_en"]
-    th_list = ["fname_th", "mname_th", "lname_th"]
+    tag_list = [
+        "fname_en",
+        "mname_en",
+        "lname_en",
+        "fname_th",
+        "mname_th",
+        "lname_th",
+    ]
+    cursor = db.cursor()
     if request.method == "POST":
         data = request.get_json()
         if not student_id.isdigit() or len(student_id) != 9:
@@ -20,13 +27,10 @@ async def student_browse(student_id) -> dict:
             msg = "invaild student id"
             return {"status": status, "msg": msg}
 
-        else:  # เอาไว้ตรวจดูว่าเขียนภาษามาถูกไหม
-            status, msg = checklanguage(en_list, data)
-            if not status:  # ถ้าไม่ถูกให้ returnfalse พร้อม สาเหตุ
-                return msg
-            status, msg = checklanguage(th_list, data)
-            if not status:  # ถ้าไม่ถูกให้ returnfalse พร้อม สาเหตุ
-                return msg
+        # เอาไว้ตรวจดูว่าเขียนภาษามาถูกไหม
+        status, msg = validate(tag_list, data)
+        if not status:  # ถ้าไม่ถูกให้ returnfalse พร้อม สาเหตุ
+            return msg
 
         if data.get("mname_en") is None:
 
@@ -56,41 +60,31 @@ async def student_browse(student_id) -> dict:
                 "student_id": student_id,
             }
 
-        cursor = db.cursor()
         cursor.execute(query)
-
         db.commit()
 
-    query = (
-        "SELECT student_id,fname_en,mname_en,lname_en,fname_th,mname_th,lname_th,email,academic_year FROM user ,student WHERE  user.user_id=student.user_id AND student_id ="
-        + student_id
-    )
-
-    cursor = db.cursor()
-    cursor.execute(query)
-    result = cursor.fetchall()[0]
-    (
-        student_id,
-        fname_en,
-        mname_en,
-        lname_en,
-        fname_th,
-        mname_th,
-        lname_th,
-        email,
-        *_,
-    ) = result
+    if request.method == "GET":
+        query = (
+            "SELECT student_id,fname_en,mname_en,lname_en,fname_th,mname_th,lname_th,email,academic_year FROM user ,student WHERE  user.user_id=student.user_id AND student_id ="
+            + student_id
+        )
+        cursor = db.cursor()
+        cursor.execute(query)
+        result = cursor.fetchall()
     return {
-        "status": status,
-        "msg": msg,
-        "data": {
-            "student_id": student_id,
-            "first_name_en": fname_en,
-            "mid_name_en": mname_en,
-            "last_name_en": lname_en,
-            "first_name_th": fname_th,
-            "mid_name_th": mname_th,
-            "last_name_th": lname_th,
-            "email": email,
-        },
+        "status": "success",
+        "msg": "OK",
+        "data": [
+            {
+                "student_id": student_id,
+                "first_name_en": fname_en,
+                "mid_name_en": mname_en,
+                "last_name_en": lname_en,
+                "first_name_th": fname_th,
+                "mid_name_th": mname_th,
+                "last_name_th": lname_th,
+                "email": email,
+            }
+            for student_id, fname_en, mname_en, lname_en, fname_th, mname_th, lname_th, email, *_ in result
+        ],
     }

@@ -4,7 +4,7 @@ from flask import Blueprint, request
 blueprint: Blueprint = Blueprint("course_browse", __name__)
 
 
-@blueprint.route("/course_browse", methods=["GET"])
+@blueprint.route("/browse", methods=["GET"])
 async def browse_course() -> dict:
     query = "SELECT * FROM course"
     params = request.args.to_dict()
@@ -19,6 +19,9 @@ async def browse_course() -> dict:
     cursor.execute(query)
 
     result = cursor.fetchall()
+    # Not Found
+    if result == []:
+        return {"status": "error", "msg": "Not Found "}
 
     return {
         "status": "success",

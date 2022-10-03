@@ -17,11 +17,11 @@ async def browse_course() -> dict:
 
     cursor = db.cursor()
     cursor.execute(query)
-
     result = cursor.fetchall()
+    # Not Found
     if result == []:
         return {"status": "error", "msg": "Not Found "}
-    return {
+    return {  # Found
         "status": "success",
         "msg": "OK",
         "data": [
