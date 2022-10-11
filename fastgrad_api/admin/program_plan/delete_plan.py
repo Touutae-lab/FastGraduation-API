@@ -1,11 +1,13 @@
 from database import db
 from flask import Blueprint, request
+from supertokens_python.recipe.session.framework.flask import verify_session
 
 blueprint: Blueprint = Blueprint("delete_plan", __name__)
 
 
-@blueprint.route("/plan/delete/<plan_id>", methods=["GET"])
-async def plan_delete(plan_id) -> dict:
+@blueprint.route("/delete/<plan_id>", methods=["GET"])
+@verify_session()
+def plan_delete(plan_id) -> dict:
     val = "SELECT * FROM plan WHERE id ="
     query = "DELETE FROM plan WHERE id = "
     params = request.args.to_dict()
