@@ -1,11 +1,13 @@
 from database import db
 from flask import Blueprint, request
+from supertokens_python.recipe.session.framework.flask import verify_session
 
 blueprint: Blueprint = Blueprint("student_browse", __name__)
 
 
 @blueprint.route("/browse", methods=["GET"])
-async def student_browse() -> dict:
+@verify_session()
+def student_browse() -> dict:
     query = "SELECT student_id,fname_en,mname_en,lname_en,fname_th,mname_th,lname_th,email,academic_year FROM user ,student WHERE  user.user_id=student.user_id"
     params = request.args.to_dict()
     if "q" in params:

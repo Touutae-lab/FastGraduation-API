@@ -1,5 +1,6 @@
 from database import db
 from flask import Blueprint, request
+from supertokens_python.recipe.session.framework.flask import verify_session
 
 from ..Utility_Function import validate
 
@@ -7,6 +8,7 @@ blueprint: Blueprint = Blueprint("student_edit", __name__)
 
 
 @blueprint.route("/edit/<student_id>", methods=["GET", "POST"])
+@verify_session()
 async def student_browse(student_id) -> dict:
     status = "success"
     msg = "ok"

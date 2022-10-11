@@ -1,9 +1,11 @@
 from database import db
 from flask import Blueprint, request
+from supertokens_python.recipe.session.framework.flask import verify_session
 
 blueprint: Blueprint = Blueprint("course_browse", __name__)
 
 
+@verify_session()
 @blueprint.route("/browse", methods=["GET"])
 async def browse_course() -> dict:
     query = "SELECT * FROM course"

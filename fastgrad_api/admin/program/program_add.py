@@ -1,5 +1,6 @@
 from database import db
 from flask import Blueprint, request
+from supertokens_python.recipe.session.framework.flask import verify_session
 
 from ..Utility_Function import validate
 
@@ -7,6 +8,7 @@ blueprint: Blueprint = Blueprint("program_add", __name__)
 
 
 @blueprint.route("/add", methods=["POST"])
+@verify_session()
 async def program_add() -> dict:
     status = "success"
     msg = "ok"

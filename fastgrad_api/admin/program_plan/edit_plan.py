@@ -1,11 +1,13 @@
 from database import db
 from flask import Blueprint, request
+from supertokens_python.recipe.session.framework.flask import verify_session
 
 blueprint: Blueprint = Blueprint("edit_plan", __name__)
 
 
-@blueprint.route("/plan/edit/<plan_id>", methods=["GET", "POST"])
-async def plan_edit(plan_id) -> dict:
+@blueprint.route("/edit/<plan_id>", methods=["GET", "POST"])
+@verify_session()
+def plan_edit(plan_id) -> dict:
 
     dataes = request.get_json()
 
