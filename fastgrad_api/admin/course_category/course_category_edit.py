@@ -1,13 +1,11 @@
 from database import db
 from flask import Blueprint, request
 
-blueprint: Blueprint = Blueprint("edit_category", __name__)
+blueprint: Blueprint = Blueprint("course_category_edit", __name__)
 
 
-@blueprint.route(
-    "/course_category/edit/<category_id>", methods=["GET", "POST"]
-)
-async def category_edit(category_id) -> dict:
+@blueprint.route("/edit/<category_id>", methods=["GET", "POST"])
+def course_category_edit(category_id) -> dict:
 
     dataes = request.get_json()
 

@@ -1,11 +1,11 @@
 from database import db
 from flask import Blueprint, request
 
-blueprint: Blueprint = Blueprint("browse_category", __name__)
+blueprint: Blueprint = Blueprint("course_category_browse", __name__)
 
 
-@blueprint.route("/course_category/browse", methods=["GET"])
-async def browse_category() -> dict:
+@blueprint.route("/browse", methods=["GET"])
+def course_category_browse() -> dict:
     query = "SELECT * FROM course_category"
     params = request.args.to_dict()
 
