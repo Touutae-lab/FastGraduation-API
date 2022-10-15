@@ -34,8 +34,7 @@ def plan_delete(plan_id) -> dict:
                 "name_th": name_th,
                 "name_en": name_en,
                 "min_credit": min_credit,
-                "is_for_all": is_for_all,
             }
-            for id, program_id, name_th, name_en, min_credit, is_for_all, *_ in temp
+            for id, program_id, name_th, name_en, min_credit, *_ in temp
         ],
     }
