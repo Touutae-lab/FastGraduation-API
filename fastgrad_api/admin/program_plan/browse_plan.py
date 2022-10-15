@@ -5,7 +5,7 @@ from supertokens_python.recipe.session.framework.flask import verify_session
 blueprint: Blueprint = Blueprint("browse_plan", __name__)
 
 
-@blueprint.route("/browse/<program_id:int>", methods=["GET"])
+@blueprint.route("/browse/<program_id>", methods=["GET"])
 @verify_session()
 def browse_category(program_id: int) -> dict:
     query = "SELECT * FROM plan WHERE program_id = %s"
