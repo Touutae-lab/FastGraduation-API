@@ -7,7 +7,7 @@ blueprint: Blueprint = Blueprint("delete_plan", __name__)
 
 @blueprint.route("/delete/<plan_id>", methods=["GET"])
 @verify_session()
-def plan_delete(plan_id) -> dict:
+def plan_delete(plan_id: int) -> dict:
     val = "SELECT * FROM plan WHERE id ="
     query = "DELETE FROM plan WHERE id = "
     params = request.args.to_dict()
