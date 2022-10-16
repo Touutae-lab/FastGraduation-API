@@ -8,8 +8,8 @@ blueprint: Blueprint = Blueprint("edit_plan", __name__)
 
 PLAN_COLS: Final[FrozenSet[str]] = frozenset(
     {
-        "program_id",
         "min_credit",
+        "program_id",
         "name_en",
         "name_th",
     }
@@ -22,8 +22,8 @@ def plan_edit(plan_id: int) -> dict:
     """
     request API spec
     {
-        "program_id": int,
         "min_credit": int,
+        "program_id": int,
         "name_en": str,
         "name_th": str,
         "default_course_plan": ["001101", "001102", ...]
@@ -31,7 +31,7 @@ def plan_edit(plan_id: int) -> dict:
     """
 
     if request.method == "GET":
-        query: str = "SELECT * FROM plan WHERE `id` = %(plan_id)s"
+        query: str = "SELECT * FROM `plan` WHERE `id` = %(plan_id)s"
         vals: Dict[str, Any] = {"plan_id": plan_id}
 
         mycursor = db.cursor()
@@ -54,6 +54,14 @@ def plan_edit(plan_id: int) -> dict:
         mycursor.execute(query, vals)
         qcourse_res = mycursor.fetchall()
 
+        query: str = (
+            "SELECT * FROM `plan_requirement` WHERE `plan_id` = %(plan_id)s"
+        )
+        vals: Dict[str, Any] = {"plan_id": plan_id}
+
+        mycursor.execute(query, vals)
+        qrequired_res = mycursor.fetchall()
+
         result = {
             field: row[i]
             for i, field in enumerate(field_names)
@@ -61,6 +69,10 @@ def plan_edit(plan_id: int) -> dict:
         }
         result["default_course_plan"] = [
             "%06d" % row[0] for row in qcourse_res
+        ]
+        result["plan_requirement"] = [
+            {"category_id": cat_id, "min_credit": min_credit}
+            for *_, cat_id, min_credit in qrequired_res
         ]
 
         return {"status": "success", "msg": "OK", "data": result}
