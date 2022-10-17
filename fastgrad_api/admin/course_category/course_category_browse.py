@@ -2,7 +2,7 @@ from database import db
 from flask import Blueprint, request
 from supertokens_python.recipe.session.framework.flask import verify_session
 
-blueprint: Blueprint = Blueprint("browse_category", __name__)
+blueprint: Blueprint = Blueprint("course_category_browse", __name__)
 
 
 @blueprint.route("/browse", methods=["GET"])

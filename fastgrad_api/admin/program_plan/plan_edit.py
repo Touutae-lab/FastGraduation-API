@@ -4,7 +4,7 @@ from database import db
 from flask import Blueprint, request
 from supertokens_python.recipe.session.framework.flask import verify_session
 
-blueprint: Blueprint = Blueprint("edit_plan", __name__)
+blueprint: Blueprint = Blueprint("plan_edit", __name__)
 
 PLAN_COLS: Final[FrozenSet[str]] = frozenset(
     {
