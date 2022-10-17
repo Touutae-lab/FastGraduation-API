@@ -3,5 +3,5 @@ flask[async]
 gunicorn
 mysql.connector
 pyyaml
-supertokens-python>=0.10
+supertokens-python >= 0.10
 typing-extensions
