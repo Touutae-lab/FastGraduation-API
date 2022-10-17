@@ -25,17 +25,12 @@ async def browse_course() -> dict:
     if result == []:
         return {"status": "error", "msg": "Not Found "}
 
+    cols = [i[0] for i in cursor.description]
+
     return {
         "status": "success",
         "msg": "OK",
         "data": [
-            {
-                "course_id": f"{course_id:06d}",
-                "course_name_th": course_name_th,
-                "course_name_en": course_name_en,
-                "description_th": description_th,
-                "description_en": description_en,
-            }
-            for course_id, course_name_th, course_name_en, credit, description_th, description_en, *_ in result
+            {col: row[i] for i, col in enumerate(cols)} for row in result
         ],
     }
