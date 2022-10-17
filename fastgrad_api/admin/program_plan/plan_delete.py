@@ -1,17 +1,24 @@
 from database import db
 from flask import Blueprint, request
+from supertokens_python.recipe.session.framework.flask import verify_session
 
-blueprint: Blueprint = Blueprint("delete_plan", __name__)
+blueprint: Blueprint = Blueprint("plan_delete", __name__)
 
 
-@blueprint.route("/plan/delete/<plan_id>", methods=["GET"])
-async def plan_delete(plan_id) -> dict:
+@blueprint.route("/delete/<plan_id>", methods=["GET"])
+@verify_session()
+def plan_delete(plan_id) -> dict:
     val = "SELECT * FROM plan WHERE id ="
     query = "DELETE FROM plan WHERE id = "
     params = request.args.to_dict()
-    if "q" in params:
-        query += params["q"]
-        val += params["q"]
+    if "plan_id" in params:
+        query += params["plan_id"]
+        val += params["plan_id"]
+    else:
+        return {
+            "status": "fail",
+            "msg": " need to input plan_id not  program_id",
+        }
 
     cursor = db.cursor()
     cursor.execute(val)
@@ -21,6 +28,8 @@ async def plan_delete(plan_id) -> dict:
     cursor.execute(query)
 
     db.commit()
+    if temp == []:
+        return {"status": "fail", "msg": "not found this plan id"}
 
     return {
         "status": "success",
@@ -32,8 +41,7 @@ async def plan_delete(plan_id) -> dict:
                 "name_th": name_th,
                 "name_en": name_en,
                 "min_credit": min_credit,
-                "is_for_all": is_for_all,
             }
-            for id, program_id, name_th, name_en, min_credit, is_for_all, *_ in temp
+            for id, program_id, name_th, name_en, min_credit, *_ in temp
         ],
     }

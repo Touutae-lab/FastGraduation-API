@@ -1,11 +1,13 @@
 from database import db
 from flask import Blueprint, request
+from supertokens_python.recipe.session.framework.flask import verify_session
 
 blueprint: Blueprint = Blueprint("add_category", __name__)
 
 
-@blueprint.route("/course_category/add", methods=["POST"])
-async def category_add() -> dict:
+@blueprint.route("/add", methods=["POST"])
+@verify_session()
+def category_add() -> dict:
     dataes = request.get_json()
 
     result = []
