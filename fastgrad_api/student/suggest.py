@@ -40,7 +40,7 @@ async def postSuggest() -> dict:
         learned_course.append(utility.getCategory(i)[0])
 
     possible_course = utility.findPossibleCourse(learned_course, all_course)
-    term_2 = utility.suggestion(possible_course, requirement, learned_course)
+    term_2 = utility.suggestion(possible_course, requirement, learned_course, term_id=2)
 
     return {"term_1": term_1, "term_2": term_2}
 
@@ -57,7 +57,7 @@ async def testStudent() -> dict:
         learned_course.append(utility.getCategory(i)[0])
 
     possible_course = utility.findPossibleCourse(learned_course, all_course)
-    term_2 = utility.suggestion(possible_course, requirement, learned_course)
+    term_2 = utility.suggestion(possible_course, requirement, learned_course, term_id=2)
     return {"term_1": term_1, "term_2": term_2}
 
 

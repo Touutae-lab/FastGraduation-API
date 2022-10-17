@@ -107,30 +107,19 @@ def suggestion(
             token = random.sample(norm_possible[int(c[0])], 1)
             if token[0] not in suggest:
                 suggest.append(token[0])
-
+        if term_id == 1:
+            for i in suggest:
+                if checkOpen(i)[0][0] == 1:
+                    pass
+                else:
+                    suggest.remove(i)
+        if term_id == 2:
+            for i in suggest:
+                if checkOpen(i)[0][1] == 1:
+                    pass
+                else:
+                    suggest.remove(i)
     return suggest
-    # if term_id == 1:
-    #     for i in result:
-    #         if checkOpen(i)[0][0] == 1:
-    #             pass
-    #         else:
-    #             result.remove(i)
-    #     if len(result) > 7:
-    #         return random.sample(result, 7)
-    #     else:
-    #         return random.sample(need_learn, 7 - len(result))
-
-    # if term_id == 2:
-    #     for i in result:
-    #         if checkOpen(i)[0][1] == 1:
-    #             pass
-    #         else:
-    #             result.remove(i)
-    #     if len(result) > 7:
-    #         return random.sample(result, 7)
-    #     else:
-    #         return random.sample(need_learn, 7 - len(result))
-    # return result
 
 
 def getPlanRequirment(course: int = 1) -> dict:
