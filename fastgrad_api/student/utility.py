@@ -1,11 +1,18 @@
+"""
+Utility Functions
+#################
+
+"""
 import random
 
 from database import db
 
 
 def getUserEnrollment(studentId: str) -> list:
-    query: str = f"""SELECT course_id, category_id FROM enrollment
-    WHERE student_id = %s AND grade != 'F'"""
+    query: str = (
+        "SELECT course_id, category_id FROM enrollment "
+        "WHERE student_id = %s AND grade != 'F'"
+    )
     cursor = db.cursor()
     cursor.execute(query, [studentId])
 
