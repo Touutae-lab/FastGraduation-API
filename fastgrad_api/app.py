@@ -3,11 +3,15 @@ Getting Started
 ====================================
 
 """
+
+import test
+
 import admin
 import config
 import student
 from flask import Flask, abort, g, jsonify
 from flask_cors import CORS
+from supertokens import override_email_password_apis, signup_formfields
 from supertokens_python import (
     InputAppInfo,
     SupertokensConfig,
@@ -18,8 +22,6 @@ from supertokens_python.framework.flask import Middleware
 from supertokens_python.recipe import emailpassword, session
 from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.flask import verify_session
-
-# from core import get_hit_count
 
 init(
     app_info=InputAppInfo(
@@ -34,15 +36,22 @@ init(
     ),
     framework="flask",
     recipe_list=[
+        emailpassword.init(
+            sign_up_feature=emailpassword.InputSignUpFeature(
+                form_fields=signup_formfields
+            ),
+            override=emailpassword.InputOverrideConfig(
+                apis=override_email_password_apis
+            ),
+        ),
         session.init(),  # initializes session features
-        emailpassword.init(),
     ],
 )
 
 
 app: Flask = Flask(__name__)
-Middleware(app)
 
+Middleware(app)
 CORS(
     app=app,
     origins=config.config["origins"],
@@ -53,6 +62,7 @@ CORS(
 # ********** BLUEPRINT REGISTERING **********
 app.register_blueprint(admin.blueprint, url_prefix="/admin")
 app.register_blueprint(student.blueprint, url_prefix="/student")
+app.register_blueprint(test.blueprint, url_prefix="/test")
 
 # This is required since if this is not there, then OPTIONS requests for
 # the APIs exposed by the supertokens' Middleware will return a 404
@@ -60,9 +70,6 @@ app.register_blueprint(student.blueprint, url_prefix="/student")
 @app.route("/<path:u_path>")
 def catch_all(u_path: str):
     abort(404)
-
-
-# TODO: Add API Routes
 
 
 @app.route("/sessioninfo", methods=["GET"])  # type: ignore
@@ -85,3 +92,7 @@ def like_comment():
     user_id = session.get_user_id()
 
     return user_id
+
+
+if __name__ == "__main__":
+    app.run()
