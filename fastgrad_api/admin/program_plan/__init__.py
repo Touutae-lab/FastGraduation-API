@@ -1,10 +1,9 @@
 from flask import Blueprint
 
-from . import add_plan, browse_plan, delete_plan, edit_plan
+from . import plan_add, plan_browse, plan_delete, plan_edit
 
-blueprint: Blueprint = Blueprint("program_plan", __name__)
-
-blueprint.register_blueprint(add_plan.blueprint)
-blueprint.register_blueprint(browse_plan.blueprint)
-blueprint.register_blueprint(delete_plan.blueprint)
-blueprint.register_blueprint(edit_plan.blueprint)
+blueprint: Blueprint = Blueprint("plan", __name__)
+blueprint.register_blueprint(plan_add.blueprint)
+blueprint.register_blueprint(plan_browse.blueprint)
+blueprint.register_blueprint(plan_edit.blueprint)
+blueprint.register_blueprint(plan_delete.blueprint)
