@@ -1,6 +1,7 @@
+import random
 
 from database import db
-import random
+
 
 def getUserEnrollment(studentId: str) -> list:
     query: str = f"""SELECT course_id, category_id FROM enrollment
@@ -32,18 +33,18 @@ def findPrerequisite(course):
     query: str = "SELECT precourse_id, pregroup_id FROM `prerequisite` WHERE course_id = %s"
     cursor = db.cursor()
     cursor.execute(query, [course])
-    
+
     data = cursor.fetchall()
     db.commit()
-    
-    result  = {}
-    
+
+    result = {}
+
     if len(data) == 1:
         return data
-    
+
     for i in data:
         if i[1] not in result:
-            result.update({i[1] : [i[0]]})
+            result.update({i[1]: [i[0]]})
         elif i[1] in result:
             result[i[1]].append(i[0])
     return result
@@ -59,32 +60,33 @@ def findPossibleCourse(learnedCourse: list, allCourse: list):
     for i in can_learn:
         if canLearn(i, learnedCourse):
             result.append(i)
-    result  = set(result)
+    result = set(result)
     pseudo = removeCourse()
     for i in pseudo:
         result.discard(i)
     return list(result)
 
 
-def suggestion(possiblecourse: list, requirement: dict, learned_course, term_id = 1):
+def suggestion(
+    possiblecourse: list, requirement: dict, learned_course, term_id=1
+):
     norm_possible = normallize_requirement(possiblecourse)
     norm_cred = normCred(learned_course)
-    
+
     for i in requirement:
         if i in norm_cred:
             requirement.update({i: requirement[i] - norm_cred[i]})
-    
+
     need_learn = [i for i in requirement if requirement[i] != 0]
-    
-    
+
     result = []
     for i in norm_possible[5]:
         result.append(i)
-    
+
     suggest = random.sample(result, 3)
-    
+
     # c = random.sample(need_learn, 4)
-    
+
     # for i in c:
     #     if i not in norm_possible:
     #         pass
@@ -98,7 +100,7 @@ def suggestion(possiblecourse: list, requirement: dict, learned_course, term_id 
             token = random.sample(norm_possible[int(c[0])], 1)
             if token[0] not in suggest:
                 suggest.append(token[0])
-                
+
     return suggest
     # if term_id == 1:
     #     for i in result:
@@ -122,7 +124,6 @@ def suggestion(possiblecourse: list, requirement: dict, learned_course, term_id 
     #     else:
     #         return random.sample(need_learn, 7 - len(result))
     # return result
-    
 
 
 def getPlanRequirment(course: int = 1) -> dict:
@@ -146,26 +147,26 @@ def getPlanRequirment(course: int = 1) -> dict:
 # Due the DB confusion this is the result for suggestion code LUL
 def canLearn(course: str, learned_course):
     pre = findPrerequisite(course)
-    
-    
-    query: str = "SELECT inclusion_type FROM prerequisite_group WHERE group_no = %s"
-    cursor = db.cursor()
 
+    query: str = (
+        "SELECT inclusion_type FROM prerequisite_group WHERE group_no = %s"
+    )
+    cursor = db.cursor()
 
     if len(pre) == 0:
         return True
-    
+
     if len(pre) == 1:
         if pre[0][0] in learned_course:
             return True
         else:
             return False
-        
+
     for i in pre:
         cursor.execute(query, [i])
         data = cursor.fetchall()
         db.commit()
-        
+
         if data[0][0] == "any":
             for j in pre[i]:
                 if j in learned_course:
@@ -173,8 +174,8 @@ def canLearn(course: str, learned_course):
         if data[0][0] == "all":
             count = 0
             for j in pre[i]:
-                    if j in learned_course:
-                        count += 1
+                if j in learned_course:
+                    count += 1
             if len(pre[i]) == count:
                 return True
     return False
@@ -197,27 +198,28 @@ def removeCourse():
 def normallize_requirement(possible_course):
     query: str = "SELECT * FROM default_course_category WHERE course_id = %s"
     cursor = db.cursor()
-    
+
     result = {}
     for i in possible_course:
         cursor.execute(query, [i])
         data = cursor.fetchall()
         db.commit()
-        
+
         if data[0][1] not in result:
-            result.update({data[0][1] : [data[0][0]]})
+            result.update({data[0][1]: [data[0][0]]})
         elif data[0][1] in result:
             result[data[0][1]].append(data[0][0])
     return result
 
-
     """_summary_
     "course_category_id" : ""
     """
+
+
 def getCreditCourse(course):
     query: str = "SELECT id, credit FROM course where id = %s"
     cursor = db.cursor()
-    
+
     cursor.execute(query, [course])
     data = cursor.fetchall()
     db.commit()
@@ -233,14 +235,14 @@ def normCred(learned_course):
         if key not in result:
             result.update({key: value})
         result.update({key: result[key] + value})
-        
+
     return result
 
 
 def checkOpen(course):
     query: str = "SELECT term_1, term_2 FROM course where id = %s"
     cursor = db.cursor()
-    
+
     cursor.execute(query, [course])
     data = cursor.fetchall()
     db.commit()
@@ -251,7 +253,7 @@ def checkOpen(course):
 def getCategory(course):
     query: str = "SELECT * FROM `default_course_category` WHERE course_id = %s"
     cursor = db.cursor()
-    
+
     cursor.execute(query, [course])
     data = cursor.fetchall()
     db.commit()

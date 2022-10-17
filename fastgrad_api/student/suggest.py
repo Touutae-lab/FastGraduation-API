@@ -1,9 +1,8 @@
 import random
 
-from pkg_resources import require
-
 from database import db
 from flask import Blueprint, request, request_finished
+from pkg_resources import require
 from supertokens_python.recipe.session.framework.flask import verify_session
 
 from . import utility
@@ -49,24 +48,21 @@ Returns:
 @blueprint.route("/suggest", methods=["POST"])
 async def postSuggest() -> dict:
     req = request.args.to_dict()
-    
+
     all_course = utility.getCourse(req["plan_id"])
     learned_course = utility.getUserEnrollment(req["student_id"])
     possible_course = utility.findPossibleCourse(learned_course, all_course)
     requirement = utility.getPlanRequirment(req["plan_id"])
 
     term_1 = utility.suggestion(possible_course, requirement, learned_course)
-    
+
     for i in term_1:
         learned_course.append(utility.getCategory(i)[0])
-    
+
     possible_course = utility.findPossibleCourse(learned_course, all_course)
     term_2 = utility.suggestion(possible_course, requirement, learned_course)
-    
-    return {
-        "term_1": term_1,
-        "term_2": term_2
-    }
+
+    return {"term_1": term_1, "term_2": term_2}
 
 
 @blueprint.route("/trytotest", methods=["GET"])
@@ -74,20 +70,18 @@ async def testStudent() -> dict:
     learned_course = utility.getUserEnrollment("630510501")
     all_course = utility.getCourse()
     possible_course = utility.findPossibleCourse(learned_course, all_course)
-    
+
     requirement = utility.getPlanRequirment()
     # test = utility.diffRequirment(requirement, learned_course)
-    
+
     term_1 = utility.suggestion(possible_course, requirement, learned_course)
-    
+
     for i in term_1:
         learned_course.append(utility.getCategory(i)[0])
-    
+
     possible_course = utility.findPossibleCourse(learned_course, all_course)
     term_2 = utility.suggestion(possible_course, requirement, learned_course)
-    return {"term_1": term_1,
-            "term_2": term_2
-            }
+    return {"term_1": term_1, "term_2": term_2}
 
 
 @blueprint.route("/available_course", methods=["POST"])
@@ -101,5 +95,5 @@ async def avalable_course() -> dict:
 
 @blueprint.route("/should_learn", methods=["GET"])
 def should_learn() -> dict:
-    
+
     return
