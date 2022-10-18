@@ -27,7 +27,7 @@ async def postSuggest() -> dict:
         _type_: _description_
     """
 
-    req = request.args.to_dict()
+    req = request.form.to_dict()
 
     all_course = utility.getCourse(req["plan_id"])
     learned_course = utility.getUserEnrollment(req["student_id"])
@@ -63,7 +63,7 @@ async def testStudent() -> dict:
 
 @blueprint.route("/available_course", methods=["POST"])
 async def avalable_course() -> dict:
-    req = request.args.to_dict()
+    req = request.form.to_dict()
     learned_course = utility.getUserEnrollment(req["student_id"])
     all_course = utility.getCourse(req["plan_id"])
     possible_course = utility.findPossibleCourse(learned_course, all_course)
