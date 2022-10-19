@@ -1,89 +1,114 @@
-# from admin.student.Utility_Function import checklanguage
+from typing import Any, Dict, Final, FrozenSet
+
 from database import db
 from flask import Blueprint, request
 from supertokens_python.recipe.session.framework.flask import verify_session
 
-from ..Utility_Function import validate
-
 blueprint: Blueprint = Blueprint("course_edit", __name__)
+
+COURSE_COLS: Final[FrozenSet[str]] = frozenset(
+    {
+        "id",
+        "name_th",
+        "name_en",
+        "credit",
+        "description_th",
+        "description_en",
+        "term_1",
+        "term_2",
+        "term_s",
+        "min_year",
+        "consent_dept",
+    }
+)
 
 
 @blueprint.route("/edit/<course_id>", methods=["GET", "POST"])
 @verify_session()
-def course_edit(course_id) -> dict:
-    status = "success"
-    msg = "ok"
-    results = []
-    tag_list = [
-        "course_name_th",
-        "description_th",
-        "course_id",
-        "cousre_id_pre",
-        "Term_one",
-        "Term_two",
-        "Term_summer",
-        "pregroup_id",
-        "credit",
-        "course_name_en",
-        "description_en",
-    ]
+def course_edit(course_id: int) -> dict:
+    """
+    request API spec
+    {
+        "id": str,
+        "name_th": str,
+        "name_en": str,
+        "credit": str,
+        "description_th": str,
+        "description_en": str,
+        "term_1": str,
+        "term_2": str,
+        "term_s": str,
+        "min_year": str,
+        "consent_dept": str,
+    }
+    """
+
+    if request.method == "GET":
+        query: str = "SELECT * FROM `course` WHERE `id` = %(course_id)s"
+        vals: Dict[str, Any] = {"course_id": course_id}
+
+        mycursor = db.cursor()
+        mycursor.execute(query, vals)
+
+        field_names = [i[0] for i in mycursor.description]
+        qcat_res = mycursor.fetchall()
+
+        if not qcat_res:
+            return {
+                "status": "failed",
+                "msg": f"The course with ID {course_id} is not in the database",
+            }
+
+        result = {
+            field: row[i]
+            for i, field in enumerate(field_names)
+            for row in qcat_res
+        }
+
+        return {"status": "success", "msg": "OK", "data": result}
 
     if request.method == "POST":
-        datas = request.get_json()
-        for data in datas:
-            results.append(datas.get(data))
-        status, msg = validate(tag_list, datas)
-        if not status:  # ถ้าไม่ถูกให้ returnfalse พร้อม สาเหตุ
-            return msg
+        # check if course_id exists in category
+        query: str = "SELECT COUNT(*) FROM `course` WHERE `id` = %(course_id)s"
+        vals: Dict[str, Any] = {"course_id": course_id}
 
+        mycursor = db.cursor()
+        mycursor.execute(query, vals)
+
+        qexists = mycursor.fetchall()
+
+        if qexists[0] == 0:
+            return {
+                "status": "failed",
+                "msg": f"The course category with ID {course_id} is not in the database",
+            }
+
+        # check if user provides all required fields
+        data = request.get_json()
+        if not isinstance(data, dict):
+            return {
+                "status": "failed",
+                "msg": "The request data must be JSON Object",
+            }
+
+        if not COURSE_COLS.issubset(data.keys()):
+            return {"status": "failed", "msg": "Not enough key to update"}
+
+        # update the plan
         query: str = (
-            "UPDATE course "
-            "INNER JOIN prerequisite ON course.id=prerequisite.course_id "
-            "SET name_en=%s ,name_th=%s, credit=%s, description_th=%s, "
-            "description_en=%s, term_1=%s, term_2=%s, term_s=%s, "
-            "precousre_id=%s, pregroup_id=%s "
-            "WHERE course_id=%s"
+            "UPDATE `course` SET "
+            + ", ".join(f"`{col}` = %({col})s" for col in COURSE_COLS)
+            + " WHERE `id` = %(course_id)s"
         )
+        vals: Dict[str, Any] = {
+            field: data.get(field) for field in COURSE_COLS
+        }
+        vals["course_id"] = course_id
 
-        results.append(course_id)
-
-        cursor = db.cursor()
-        cursor.execute(query, results)
+        mycursor.execute(query, vals)
         db.commit()
 
-    query = "SELECT * FROM `course` WHERE id = %s"
-
-    cursor = db.cursor()
-    cursor.execute(query, [course_id])
-    result = cursor.fetchall()[0]
-    (
-        name_th,
-        name_en,
-        credit,
-        description_th,
-        description_en,
-        term_1,
-        term_2,
-        term_s,
-        course_id,
-        precousre_id,
-        pregroup_id,
-        *_,
-    ) = result
-    return {
-        "status": status,
-        "msg": msg,
-        "data": {
-            "course_id": course_id,
-            "course_name_th": name_th,
-            "course_name_en": name_en,
-            "credit": credit,
-            "description_th": description_th,
-            "description_en": description_en,
-            "Term_one": term_1,
-            "Term_two": term_2,
-            "Term_summer": term_s,
-            "precousre_id": precousre_id,
-            "pregroup_id": pregroup_id,
-        },
-    }
+        return {
+            "status": "success",
+            "msg": "OK",
+        }
