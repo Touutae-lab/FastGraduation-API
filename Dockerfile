@@ -13,7 +13,7 @@ ENV SETUPTOOLS_USE_DISTUTILS=stdlib
 RUN apk add --no-cache gcc musl-dev linux-headers
 RUN pip install -r requirements.txt
 
-EXPOSE 5000
+EXPOSE 8000
 
 WORKDIR /app/fastgrad_api
-CMD gunicorn --workers 4 --bind 0.0.0.0:5000 wsgi:app
+CMD gunicorn --workers 4 --bind 0.0.0.0:8000 wsgi:app
