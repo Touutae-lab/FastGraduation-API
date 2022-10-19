@@ -41,8 +41,9 @@ def browse_course() -> dict:
     col_course = [i[0] for i in cursor.description]
     res_courses = cursor.fetchall()
 
-    query = "SELECT id, abbr_th, abbr_en FROM course_category"
+    query = "SELECT * FROM course_category"
     cursor.execute(query)
+    col_cat = [i[0] for i in cursor.description]
     res_cat = cursor.fetchall()
 
     return {
@@ -54,12 +55,8 @@ def browse_course() -> dict:
                 for row in res_courses
             ],
             "categories": [
-                {
-                    "category_id": cat_id,
-                    "abbr_th": abbr_th,
-                    "abbr_en": abbr_en,
-                }
-                for cat_id, abbr_th, abbr_en, *_ in res_cat
+                {col: row[i] for i, col in enumerate(col_cat)}
+                for row in res_cat
             ],
         },
     }
