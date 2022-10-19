@@ -26,18 +26,33 @@ def browse_course() -> dict:
     cursor = db.cursor()
     cursor.execute(query % {"kw": kw})
 
-    result = cursor.fetchall()
+    res_courses = cursor.fetchall()
+
+    query = "SELECT id, abbr_th, abbr_en FROM course_category"
+    cursor = db.cursor()
+    cursor.execute(query)
+    res_cat = cursor.fetchall()
 
     return {
         "status": "success",
         "msg": "OK",
-        "data": [
-            {
-                "course_id": f"{course_id:06d}",
-                "course_name_th": course_name_th,
-                "course_name_en": course_name_en,
-                "cat_id": cat_id,
-            }
-            for course_id, course_name_th, course_name_en, cat_id, *_ in result
-        ],
+        "data": {
+            "available_courses": [
+                {
+                    "course_id": f"{course_id:06d}",
+                    "course_name_th": course_name_th,
+                    "course_name_en": course_name_en,
+                    "cat_id": cat_id,
+                }
+                for course_id, course_name_th, course_name_en, cat_id, *_ in res_courses
+            ],
+            "categories": [
+                {
+                    "category_id": cat_id,
+                    "abbr_th": abbr_th,
+                    "abbr_en": abbr_en,
+                }
+                for cat_id, abbr_th, abbr_en, *_ in res_cat
+            ],
+        },
     }
