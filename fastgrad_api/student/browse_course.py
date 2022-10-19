@@ -15,7 +15,7 @@ def browse_course() -> dict:
 
     query = "SELECT academic_year FROM student WHERE user_id = %s"
     cursor.execute(query, [user_id])
-    stu_year = cursor.fetchall()[0]
+    stu_year = cursor.fetchall()[0][0]
 
     plan_id = 3
     if stu_year == 2020:
