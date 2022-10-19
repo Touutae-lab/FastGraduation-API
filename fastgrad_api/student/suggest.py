@@ -1,8 +1,10 @@
-from flask import Blueprint, request
+from flask import Blueprint, g
+from supertokens_python.recipe.session import SessionContainer
+from supertokens_python.recipe.session.framework.flask import verify_session
 
 from . import utility
 
-blueprint: Blueprint = Blueprint("/suggest", __name__)
+blueprint: Blueprint = Blueprint("suggest", __name__)
 
 rank: list = [5, 4, 3]
 
@@ -17,8 +19,9 @@ def findCourse():
     return
 
 
-@blueprint.route("/suggest", methods=["POST"])
-async def postSuggest() -> dict:
+@blueprint.route("/suggest", methods=["GET"])
+@verify_session()
+def postSuggest() -> dict:
     """_summary_
     the request body must look like this
     course: number
@@ -27,12 +30,15 @@ async def postSuggest() -> dict:
         _type_: _description_
     """
 
-    req = request.form.to_dict()
+    session: SessionContainer = g.supertokens
+    user_id = session.get_user_id()
+    student_id = utility.getStudentId(user_id)
+    plan_id = utility.getPlanId(student_id)
 
-    all_course = utility.getCourse(req["plan_id"])
-    learned_course = utility.getUserEnrollment(req["student_id"])
+    all_course = utility.getCourse(plan_id)
+    learned_course = utility.getUserEnrollment(student_id)
     possible_course = utility.findPossibleCourse(learned_course, all_course)
-    requirement = utility.getPlanRequirment(req["plan_id"])
+    requirement = utility.getPlanRequirment(plan_id)
 
     term_1 = utility.suggestion(possible_course, requirement, learned_course)
 
@@ -65,10 +71,15 @@ async def testStudent() -> dict:
     return {"term_1": term_1, "term_2": term_2}
 
 
-@blueprint.route("/available_course", methods=["POST"])
-async def avalable_course() -> dict:
-    req = request.form.to_dict()
-    learned_course = utility.getUserEnrollment(req["student_id"])
-    all_course = utility.getCourse(req["plan_id"])
+@blueprint.route("/available_course", methods=["GET"])
+@verify_session()
+def avalable_course() -> dict:
+    session: SessionContainer = g.supertokens
+    user_id = session.get_user_id()
+    student_id = utility.getStudentId(user_id)
+    plan_id = utility.getPlanId(student_id)
+
+    learned_course = utility.getUserEnrollment(student_id)
+    all_course = utility.getCourse(plan_id)
     possible_course = utility.findPossibleCourse(learned_course, all_course)
     return {"course": possible_course}
