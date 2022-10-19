@@ -22,7 +22,7 @@ def browse_course() -> dict:
         plan_id = 1
 
     query = (
-        "SELECT id, name_th, name_en, category_id "
+        "SELECT id, credit, name_th, name_en, description_th, description_en, term_1, term_2, term_s, min_year, consent_dept, category_id "
         "FROM course "
         "JOIN default_course_plan ON id = default_course_plan.course_id "
         "LEFT JOIN default_course_category ON id = default_course_category.course_id "
@@ -38,6 +38,7 @@ def browse_course() -> dict:
 
     cursor.execute(query % {"kw": kw, "plan_id": plan_id})
 
+    col_course = [i[0] for i in cursor.description]
     res_courses = cursor.fetchall()
 
     query = "SELECT id, abbr_th, abbr_en FROM course_category"
@@ -49,13 +50,8 @@ def browse_course() -> dict:
         "msg": "OK",
         "data": {
             "available_courses": [
-                {
-                    "course_id": f"{course_id:06d}",
-                    "course_name_th": course_name_th,
-                    "course_name_en": course_name_en,
-                    "cat_id": cat_id,
-                }
-                for course_id, course_name_th, course_name_en, cat_id, *_ in res_courses
+                {col: row[i] for i, col in enumerate(col_course)}
+                for row in res_courses
             ],
             "categories": [
                 {
