@@ -1,5 +1,6 @@
 from database import db
 from flask import Blueprint, request
+from supertokens_python.recipe.session.framework.flask import verify_session
 
 blueprint: Blueprint = Blueprint("update_enrollment", __name__)
 
@@ -16,7 +17,8 @@ _GRADE = {
 
 
 @blueprint.route("/update_enrollment", methods=["POST"])
-async def update_enrollment() -> dict:
+@verify_session()
+def update_enrollment() -> dict:
     data = request.get_json()
     query = "INSERT INTO enrollment (student_id, course_id, category_id, term, year, grade, grade_no) VALUES (%s, %s, %s, %s, %s, %s, %s)"
     records = []

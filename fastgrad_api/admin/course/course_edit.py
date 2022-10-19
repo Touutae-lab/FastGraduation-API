@@ -36,24 +36,25 @@ def course_edit(course_id) -> dict:
         if not status:  # ถ้าไม่ถูกให้ returnfalse พร้อม สาเหตุ
             return msg
 
-        query = """UPDATE course
-                    INNER JOIN prerequisite ON course.id=prerequisite.course_id
-                    SET name_en=%s,name_th =%s ,credit=%s,description_th=%s
-                    ,description_en=%s,term_1=%s,term_2=%s,term_s=%s,precousre_id=%s,pregroup_id=%s
-                    WHERE course_id=""" + str(
-            course_id
+        query: str = (
+            "UPDATE course "
+            "INNER JOIN prerequisite ON course.id=prerequisite.course_id "
+            "SET name_en=%s ,name_th=%s, credit=%s, description_th=%s, "
+            "description_en=%s, term_1=%s, term_2=%s, term_s=%s, "
+            "precousre_id=%s, pregroup_id=%s "
+            "WHERE course_id=%s"
         )
+
+        results.append(course_id)
+
         cursor = db.cursor()
         cursor.execute(query, results)
         db.commit()
 
-    query = (
-        "SELECT * FROM `course`,prerequisite WHERE  course.id=prerequisite.course_id and id="
-        + course_id
-    )
+    query = "SELECT * FROM `course` WHERE id = %s"
 
     cursor = db.cursor()
-    cursor.execute(query)
+    cursor.execute(query, [course_id])
     result = cursor.fetchall()[0]
     (
         name_th,
