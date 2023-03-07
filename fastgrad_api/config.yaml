@@ -2,7 +2,7 @@ mysql:
   host: "db"
   port: "3306"
   user: "fastgrad_api"
-  password: "3r1rtSCF3jT71Jj2duZ60U5Lqf2CyyMh"
+  password: "376AD3B59CDFA305A42C9BE633C1BE41E124A3EF"
   database: "fastgrad"
 origins:
   - http://localhost:3000
