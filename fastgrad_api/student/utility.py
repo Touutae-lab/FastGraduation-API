@@ -8,6 +8,30 @@ import random
 from database import db
 
 
+def getStudentId(user_id: str) -> int:
+    query: str = "SELECT student_id FROM student WHERE user_id = %s"
+    cursor = db.cursor()
+    cursor.execute(query, [user_id])
+
+    result = cursor.fetchall()
+
+    return result[0][0]
+
+
+def getPlanId(student_id: str) -> int:
+    query: str = "SELECT academic_year FROM student WHERE student_id = %s"
+    cursor = db.cursor()
+    cursor.execute(query, [student_id])
+
+    result = cursor.fetchall()[0][0]
+
+    plan_id = 3
+    if result == 2020:
+        plan_id = 1
+
+    return plan_id
+
+
 def getUserEnrollment(studentId: str) -> list:
     query: str = (
         "SELECT course_id, category_id FROM enrollment "
