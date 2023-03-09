@@ -1,4 +1,5 @@
 from flask import Blueprint, g
+from route import Route
 from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.flask import verify_session
 
@@ -8,6 +9,20 @@ blueprint: Blueprint = Blueprint("suggest", __name__)
 
 rank: list = [5, 4, 3]
 
+# class UserDefine:
+#     self.data
+#     self.naruto
+#     self.dice
+class Suggestion(Route):
+    def __init__(self) -> None:
+        super().__init__(path="/suggest", methods=["GET"])
+
+    @verify_session()
+    def get(self, *args, **kwargs) -> dict:
+        session: SessionContainer = g.supertokens
+
+
+        return {"A": session.get_user_id()}
 
 # Random Course that have equivilent weight
 def randomFromAction(id):
@@ -20,7 +35,7 @@ def findCourse():
 
 
 @blueprint.route("/suggest", methods=["GET"])
-@verify_session()
+# @verify_session()
 def postSuggest() -> dict:
     """_summary_
     the request body must look like this

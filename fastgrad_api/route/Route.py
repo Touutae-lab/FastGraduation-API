@@ -8,26 +8,33 @@ from supertokens_python.recipe.session.framework.flask import verify_session
 class Route(ABC):
     def __init__(self, path, methods=["GET"]) -> None:
         super().__init__()
-        self._methods: List[Union[Literal["GET"], Literal["POST"]]] = methods
+        self._methods: List[Union[Literal["GET"], Literal["POST"], Literal["DELETE"], Literal["PUT"]]] = methods
         self._path: Union[
             str, List[Tuple[str, Dict[str, Union[str, None]]]]
         ] = path
 
-    @abstractmethod
     def get(self, *args, **kwargs):
         pass
 
-    @abstractmethod
     def post(self, *args, **kwargs):
         pass
-
+    
+    def delete(self, *args, **kwargs):
+        pass
+    
+    def put(self, *args, **kwargs):
+        pass
+    
     def as_view(self):
         def view_func(*args, **kwargs):
             if request.method == "GET":
                 return self.get(*args, **kwargs)
             elif request.method == "POST":
                 return self.post(*args, **kwargs)
-
+            elif request.method == "DELETE":
+                return self.delete(*args, **kwargs)
+            elif request.method == "PUT":
+                return self.put(*args, **kwargs)
         return view_func
 
     @property
