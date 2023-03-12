@@ -31,11 +31,11 @@ class MissingCredits(Route):
             if i != 0:
                 all_credit[count]-=i
             count+=1
-
-        msg=self.warning(all_credit)
+        info = self.info(all_credit,student_id)
+        msg = self.warning(all_credit)
         return {"status": "success",
         "msg": "OK",
-        "data": [msg,all_credit]}
+        "data": [info,msg,all_credit]}
 
     def check_credits(self,student_id: str):
         credits=[0 for i in range(10)]
@@ -49,13 +49,29 @@ class MissingCredits(Route):
                      "over GE" : "คุณเรียนตัวGEมากกว่าที่หลักสูตรกำหนดไว้ หน่วยกิตGEที่เกินมาจะไปเพิ่มเป็นตีวฟรี",
                      "700":"เนื่องจากแผนการเรียน  หลักสูตรก้าวหน้า หลักสูตร64 จำเป็นต้องเรียนวิชา700"}
         msg=[]
-        if all_credit[8] is  None:
+        if all_credit[8] ==0:
               msg.append(warning_msg["no minor"])
         elif all_credit[1] >6:
               msg.append(warning_msg["over GE"])
 
         elif all_credit.get(9) is not None and all_credit[9] !=0:
               msg.append(warning_msg["700"])    
+        return msg
+    
+    def info(self,all_credit,student_id:dict):
+        warning_msg={"no minor":"เพียวคอม",
+                      "minor":"โทอื่น"}
+        msg=[]
+        planid=utility.getPlanId(student_id) 
+        if all_credit[8] ==0:
+            msg.append(warning_msg["no minor"])
+        elif all_credit[8] !=0:
+            msg.append(warning_msg["minor"])
+
+        if planid == 1:
+            msg.append("แผนปกติ")
+        elif planid == 3:
+            msg.append("แผนปกติ64")
         return msg
 _route: Route = MissingCredits()
 register_route(blueprint, _route)
