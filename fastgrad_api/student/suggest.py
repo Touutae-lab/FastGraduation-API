@@ -18,27 +18,28 @@ rank: list = [5, 4, 3]
 class Suggestion(Route):
     def __init__(self) -> None:
         super().__init__(path="/suggest", methods=["GET"])
-
+        self.enroll = EnrollmentDelegate()
     @verify_session()
     def get(self, *args, **kwargs) -> dict:
 
         session: SessionContainer = g.supertokens
         user_id: str = session.get_user_id()
+        
+        
+        student_id: str = self.enroll.getStudentId(user_id)
+        plan_id: str = self.enroll.getPlanId(student_id)
 
-        student_id: str = EnrollmentDelegate.getStudentId(user_id)
-        plan_id: str = EnrollmentDelegate.getPlanId(student_id)
-
-        all_course = EnrollmentDelegate.getCourse(plan_id)
-        learned_course = EnrollmentDelegate.getUserEnrollment(student_id)
-        possible_course = EnrollmentDelegate.findPossibleCourse(learned_course, all_course)
-        requirement = EnrollmentDelegate.getPlanRequirment(plan_id)
+        all_course = self.enroll.getCourse(plan_id)
+        learned_course = self.enroll.getEnrollmentCourse(student_id)
+        possible_course = self.enroll.findPossibleCourse(learned_course, all_course)
+        requirement = self.enroll.getPlanRequirment(plan_id)
 
         term_1 = self.suggestion(possible_course, requirement, learned_course)
 
         for i in term_1:
-            learned_course.append(EnrollmentDelegate.getCategory(i)[0])
+            learned_course.append(self.enroll.getCategory(i)[0])
 
-        possible_course = EnrollmentDelegate.findPossibleCourse(learned_course, all_course)
+        possible_course = self.enroll.findPossibleCourse(learned_course, all_course)
         term_2 = self.suggestion(
             possible_course, requirement, learned_course, term_id=2
         )
@@ -48,8 +49,8 @@ class Suggestion(Route):
     def suggestion(
     self, possiblecourse: list, requirement: dict, learned_course, term_id=1
 ):
-        norm_possible = EnrollmentDelegate.normallize_requirement(possiblecourse)
-        norm_cred = EnrollmentDelegate.normCred(learned_course)
+        norm_possible = self.enroll.normallize_requirement(possiblecourse)
+        norm_cred = self.enroll.normCred(learned_course)
 
         for i in requirement:
             if i in norm_cred:
@@ -71,13 +72,13 @@ class Suggestion(Route):
                     suggest.append(token[0])
             if term_id == 1:
                 for i in suggest:
-                    if EnrollmentDelegate.checkOpen(i)[0][0] == 1:
+                    if self.enroll.checkOpen(i)[0][0] == 1:
                         pass
                     else:
                         suggest.remove(i)
             if term_id == 2:
                 for i in suggest:
-                    if EnrollmentDelegate.checkOpen(i)[0][1] == 1:
+                    if self.enroll.checkOpen(i)[0][1] == 1:
                         pass
                     else:
                         suggest.remove(i)
@@ -101,7 +102,7 @@ class Suggestion(Route):
 #     plan_id = utility.getPlanId(student_id)
 
 #     all_course = utility.getCourse(plan_id)
-#     learned_course = utility.getUserEnrollment(student_id)
+#     learned_course = utility.getUserself.enrollment(student_id)
 #     possible_course = utility.findPossibleCourse(learned_course, all_course)
 #     requirement = utility.getPlanRequirment(plan_id)
 
@@ -120,17 +121,17 @@ class Suggestion(Route):
 
 @blueprint.route("/trytotest", methods=["GET"])
 async def testStudent() -> dict:
-    learned_course = EnrollmentDelegate.getUserEnrollment("630510501")
-    all_course = EnrollmentDelegate.getCourse()
-    possible_course = EnrollmentDelegate.findPossibleCourse(learned_course, all_course)
+    learned_course = self.enroll.getUserself.enrollment("630510501")
+    all_course = self.enroll.getCourse()
+    possible_course = self.enroll.findPossibleCourse(learned_course, all_course)
 
-    requirement = EnrollmentDelegate.getPlanRequirment()
-    term_1 = EnrollmentDelegate.suggestion(possible_course, requirement, learned_course)
+    requirement = self.enroll.getPlanRequirment()
+    term_1 = self.enroll.suggestion(possible_course, requirement, learned_course)
     for i in term_1:
-        learned_course.append(EnrollmentDelegate.getCategory(i)[0])
+        learned_course.append(self.enroll.getCategory(i)[0])
 
-    possible_course = EnrollmentDelegate.findPossibleCourse(learned_course, all_course)
-    term_2 = EnrollmentDelegate.suggestion(
+    possible_course = self.enroll.findPossibleCourse(learned_course, all_course)
+    term_2 = self.enroll.suggestion(
         possible_course, requirement, learned_course, term_id=2
     )
     return {"term_1": term_1, "term_2": term_2}
@@ -141,12 +142,12 @@ async def testStudent() -> dict:
 def avalable_course() -> dict:
     session: SessionContainer = g.supertokens
     user_id = session.get_user_id()
-    student_id = EnrollmentDelegate.getStudentId(user_id)
-    plan_id = EnrollmentDelegate.getPlanId(student_id)
+    student_id = self.enroll.getStudentId(user_id)
+    plan_id = self.enroll.getPlanId(student_id)
 
-    learned_course = EnrollmentDelegate.getUserEnrollment(student_id)
-    all_course = EnrollmentDelegate.getCourse(plan_id)
-    possible_course = EnrollmentDelegate.findPossibleCourse(learned_course, all_course)
+    learned_course = self.enroll.getUserself.enrollment(student_id)
+    all_course = self.enroll.getCourse(plan_id)
+    possible_course = self.enroll.findPossibleCourse(learned_course, all_course)
     return {"course": possible_course}
 
 _route: Route = Suggestion()
