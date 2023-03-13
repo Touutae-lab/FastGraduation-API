@@ -1,9 +1,11 @@
+import random
+
+# from database import db_oop as db
 from flask import Blueprint, g
-from route import Route
+from route import Route, register_route
+from student.utility import EnrollmentDelegate
 from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.flask import verify_session
-
-from . import utility
 
 blueprint: Blueprint = Blueprint("suggest", __name__)
 
@@ -19,68 +21,116 @@ class Suggestion(Route):
 
     @verify_session()
     def get(self, *args, **kwargs) -> dict:
+
         session: SessionContainer = g.supertokens
+        user_id: str = session.get_user_id()
 
+        student_id: str = EnrollmentDelegate.getStudentId(user_id)
+        plan_id: str = EnrollmentDelegate.getPlanId(student_id)
 
-        return {"A": session.get_user_id()}
+        all_course = EnrollmentDelegate.getCourse(plan_id)
+        learned_course = EnrollmentDelegate.getUserEnrollment(student_id)
+        possible_course = EnrollmentDelegate.findPossibleCourse(learned_course, all_course)
+        requirement = EnrollmentDelegate.getPlanRequirment(plan_id)
 
-# Random Course that have equivilent weight
-def randomFromAction(id):
-    return
+        term_1 = self.suggestion(possible_course, requirement, learned_course)
 
+        for i in term_1:
+            learned_course.append(EnrollmentDelegate.getCategory(i)[0])
 
-# Find course
-def findCourse():
-    return
+        possible_course = EnrollmentDelegate.findPossibleCourse(learned_course, all_course)
+        term_2 = self.suggestion(
+            possible_course, requirement, learned_course, term_id=2
+        )
 
+        return {"term_1": term_1, "term_2": term_2}
 
-@blueprint.route("/suggest", methods=["GET"])
+    def suggestion(
+    self, possiblecourse: list, requirement: dict, learned_course, term_id=1
+):
+        norm_possible = EnrollmentDelegate.normallize_requirement(possiblecourse)
+        norm_cred = EnrollmentDelegate.normCred(learned_course)
+
+        for i in requirement:
+            if i in norm_cred:
+                requirement.update({i: requirement[i] - norm_cred[i]})
+
+        need_learn = [i for i in requirement if requirement[i] != 0]
+
+        result = []
+        for i in norm_possible[5]:
+            result.append(i)
+
+        suggest = random.sample(result, 3)
+
+        while len(suggest) < 8:
+            c = random.sample(need_learn, 1)
+            if int(c[0]) in norm_possible:
+                token = random.sample(norm_possible[int(c[0])], 1)
+                if token[0] not in suggest:
+                    suggest.append(token[0])
+            if term_id == 1:
+                for i in suggest:
+                    if EnrollmentDelegate.checkOpen(i)[0][0] == 1:
+                        pass
+                    else:
+                        suggest.remove(i)
+            if term_id == 2:
+                for i in suggest:
+                    if EnrollmentDelegate.checkOpen(i)[0][1] == 1:
+                        pass
+                    else:
+                        suggest.remove(i)
+        return suggest
+
+    
+# @blueprint.route("/suggest", methods=["GET"])
 # @verify_session()
-def postSuggest() -> dict:
-    """_summary_
-    the request body must look like this
-    course: number
-    while number in range (1,6)
-    Returns:
-        _type_: _description_
-    """
+# def postSuggest() -> dict:
+#     """_summary_
+#     the request body must look like this
+#     course: number
+#     while number in range (1,6)
+#     Returns:
+#         _type_: _description_
+#     """
 
-    session: SessionContainer = g.supertokens
-    user_id = session.get_user_id()
-    student_id = utility.getStudentId(user_id)
-    plan_id = utility.getPlanId(student_id)
+#     session: SessionContainer = g.supertokens
+#     user_id = session.get_user_id()
+#     student_id = utility.getStudentId(user_id)
+#     plan_id = utility.getPlanId(student_id)
 
-    all_course = utility.getCourse(plan_id)
-    learned_course = utility.getUserEnrollment(student_id)
-    possible_course = utility.findPossibleCourse(learned_course, all_course)
-    requirement = utility.getPlanRequirment(plan_id)
+#     all_course = utility.getCourse(plan_id)
+#     learned_course = utility.getUserEnrollment(student_id)
+#     possible_course = utility.findPossibleCourse(learned_course, all_course)
+#     requirement = utility.getPlanRequirment(plan_id)
 
-    term_1 = utility.suggestion(possible_course, requirement, learned_course)
+#     term_1 = utility.suggestion(possible_course, requirement, learned_course)
 
-    for i in term_1:
-        learned_course.append(utility.getCategory(i)[0])
+#     for i in term_1:
+#         learned_course.append(utility.getCategory(i)[0])
 
-    possible_course = utility.findPossibleCourse(learned_course, all_course)
-    term_2 = utility.suggestion(
-        possible_course, requirement, learned_course, term_id=2
-    )
+#     possible_course = utility.findPossibleCourse(learned_course, all_course)
+#     term_2 = utility.suggestion(
+#         possible_course, requirement, learned_course, term_id=2
+#     )
 
-    return {"term_1": term_1, "term_2": term_2}
+#     return {"term_1": term_1, "term_2": term_2}
 
 
 @blueprint.route("/trytotest", methods=["GET"])
 async def testStudent() -> dict:
-    learned_course = utility.getUserEnrollment("630510501")
-    all_course = utility.getCourse()
-    possible_course = utility.findPossibleCourse(learned_course, all_course)
+    learned_course = EnrollmentDelegate.getUserEnrollment("630510501")
+    all_course = EnrollmentDelegate.getCourse()
+    possible_course = EnrollmentDelegate.findPossibleCourse(learned_course, all_course)
 
-    requirement = utility.getPlanRequirment()
-    term_1 = utility.suggestion(possible_course, requirement, learned_course)
+    requirement = EnrollmentDelegate.getPlanRequirment()
+    term_1 = EnrollmentDelegate.suggestion(possible_course, requirement, learned_course)
     for i in term_1:
-        learned_course.append(utility.getCategory(i)[0])
+        learned_course.append(EnrollmentDelegate.getCategory(i)[0])
 
-    possible_course = utility.findPossibleCourse(learned_course, all_course)
-    term_2 = utility.suggestion(
+    possible_course = EnrollmentDelegate.findPossibleCourse(learned_course, all_course)
+    term_2 = EnrollmentDelegate.suggestion(
         possible_course, requirement, learned_course, term_id=2
     )
     return {"term_1": term_1, "term_2": term_2}
@@ -91,10 +141,14 @@ async def testStudent() -> dict:
 def avalable_course() -> dict:
     session: SessionContainer = g.supertokens
     user_id = session.get_user_id()
-    student_id = utility.getStudentId(user_id)
-    plan_id = utility.getPlanId(student_id)
+    student_id = EnrollmentDelegate.getStudentId(user_id)
+    plan_id = EnrollmentDelegate.getPlanId(student_id)
 
-    learned_course = utility.getUserEnrollment(student_id)
-    all_course = utility.getCourse(plan_id)
-    possible_course = utility.findPossibleCourse(learned_course, all_course)
+    learned_course = EnrollmentDelegate.getUserEnrollment(student_id)
+    all_course = EnrollmentDelegate.getCourse(plan_id)
+    possible_course = EnrollmentDelegate.findPossibleCourse(learned_course, all_course)
     return {"course": possible_course}
+
+_route: Route = Suggestion()
+
+register_route(blueprint, _route)
