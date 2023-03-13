@@ -1,9 +1,9 @@
 from typing import List
 
 from database import db_oop as db
-from flask import Blueprint, request,g
+from EnrollmentDelegate import EnrollmentDelegate
+from flask import Blueprint, g, request
 from route import Route, register_route
-from . import utility
 from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.flask import verify_session
 
@@ -19,13 +19,13 @@ class MissingCredits(Route):
     def get(self, *args, **kwargs):
         session: SessionContainer = g.supertokens
         user_id = session.get_user_id()
-        student_id=utility.getStudentId(user_id)
+        student_id= EnrollmentDelegate.getStudentId(user_id)
         
         # student_id="630510501"
         count=1
 
-        plan_id=utility.getPlanId(student_id) 
-        all_credit=utility.getPlanRequirment(plan_id)
+        plan_id=EnrollmentDelegate.getPlanId(student_id) 
+        all_credit=EnrollmentDelegate.getPlanRequirment(plan_id)
         credits=self.check_credits(student_id)
         for i in credits:
             if i != 0:
@@ -39,9 +39,9 @@ class MissingCredits(Route):
 
     def check_credits(self,student_id: str):
         credits=[0 for i in range(10)]
-        enroll=utility.getUserEnrollment(student_id)
+        enroll=EnrollmentDelegate.getUserEnrollment(student_id)
         for i in enroll:
-            credits[i[1]-1] +=utility.getCreditCourse(i[0])
+            credits[i[1]-1] +=EnrollmentDelegate.getCreditCourse(i[0])
         return credits
 
     def warning(self,all_credit:dict)-> list:
@@ -62,7 +62,7 @@ class MissingCredits(Route):
         warning_msg={"no minor":"เพียวคอม",
                       "minor":"โทอื่น"}
         msg=[]
-        planid=utility.getPlanId(student_id) 
+        planid=EnrollmentDelegate.getPlanId(student_id) 
         if all_credit[8] ==0:
             msg.append(warning_msg["no minor"])
         elif all_credit[8] !=0:
