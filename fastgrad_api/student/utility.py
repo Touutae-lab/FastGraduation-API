@@ -12,7 +12,7 @@ class EnrollmentDelegate():
     def __init__(self) -> None:
         self.cursor = db.cursor()
         
-    def getStudentId(user_id: str) -> int:
+    def getStudentId(self, user_id: str) -> int:
         query: str = "SELECT student_id FROM student WHERE user_id = %s"
         cursor = db.cursor()
         cursor.execute(query, [user_id])
