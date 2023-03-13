@@ -1,6 +1,6 @@
 from typing import List
 
-from database import db
+from database import db_oop as db
 from flask import Blueprint, request
 from route import Route, register_route
 

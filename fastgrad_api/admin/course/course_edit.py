@@ -2,6 +2,7 @@ from typing import Any, Dict, Final, FrozenSet
 
 from database import db
 from flask import Blueprint, request
+from route import Route, register_route
 from supertokens_python.recipe.session.framework.flask import verify_session
 
 blueprint: Blueprint = Blueprint("course_edit", __name__)
@@ -22,28 +23,31 @@ COURSE_COLS: Final[FrozenSet[str]] = frozenset(
     }
 )
 
+"""
+request API spec
+{
+    "id": str,
+    "name_th": str,
+    "name_en": str,
+    "credit": str,
+    "description_th": str,
+    "description_en": str,
+    "term_1": str,
+    "term_2": str,
+    "term_s": str,
+    "min_year": str,
+    "consent_dept": str,
+}
+"""
 
-@blueprint.route("/edit/<course_id>", methods=["GET", "POST"])
-@verify_session()
-def course_edit(course_id: int) -> dict:
-    """
-    request API spec
-    {
-        "id": str,
-        "name_th": str,
-        "name_en": str,
-        "credit": str,
-        "description_th": str,
-        "description_en": str,
-        "term_1": str,
-        "term_2": str,
-        "term_s": str,
-        "min_year": str,
-        "consent_dept": str,
-    }
-    """
 
-    if request.method == "GET":
+class CourseEdit(Route):
+    def __init__(self) -> None:
+        super().__init__(path="/edit/<course_id>", methods=["GET", "POST"])
+
+    @verify_session()
+    def get(self, *args, **kwargs):
+        course_id = kwargs.get("course_id")
         query: str = "SELECT * FROM `course` WHERE `id` = %(course_id)s"
         vals: Dict[str, Any] = {"course_id": course_id}
 
@@ -67,7 +71,9 @@ def course_edit(course_id: int) -> dict:
 
         return {"status": "success", "msg": "OK", "data": result}
 
-    if request.method == "POST":
+    @verify_session()
+    def post(self, *args, **kwargs):
+        course_id = kwargs.get("course_id")
         # check if course_id exists in category
         query: str = "SELECT COUNT(*) FROM `course` WHERE `id` = %(course_id)s"
         vals: Dict[str, Any] = {"course_id": course_id}
@@ -112,3 +118,7 @@ def course_edit(course_id: int) -> dict:
             "status": "success",
             "msg": "OK",
         }
+
+
+_route = CourseEdit()
+register_route(blueprint, _route)
