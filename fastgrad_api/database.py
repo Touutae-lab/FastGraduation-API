@@ -334,7 +334,6 @@ def _where_str(
     where: Union[Dict[str, Any], str],
     whereargs: Union[List[Any], None] = None,
 ) -> Tuple[str, List[Any]]:
-
     where_str: str = (
         where
         if isinstance(where, str)

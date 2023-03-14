@@ -11,6 +11,7 @@ blueprint: Blueprint = Blueprint("suggest", __name__)
 
 rank: list = [5, 4, 3]
 
+
 # class UserDefine:
 #     self.data
 #     self.naruto
@@ -22,7 +23,6 @@ class Suggestion(Route):
 
     @verify_session()
     def get(self, *args, **kwargs) -> dict:
-
         session: SessionContainer = g.supertokens
         user_id: str = session.get_user_id()
 

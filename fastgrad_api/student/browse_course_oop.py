@@ -10,7 +10,6 @@ blueprint: Blueprint = Blueprint("browse_course_oop", __name__)
 
 class BrowseCourse(Route):
     def __init__(self) -> None:
-
         super().__init__(path="/browse_course_oop", methods=["GET"])
 
     @verify_session()
