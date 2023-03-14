@@ -1,6 +1,6 @@
 from flask import Blueprint
 
-from . import course, course_category, program, program_plan, student
+from . import course, course_category, program, program_plan, student, timeline
 
 blueprint: Blueprint = Blueprint("admin", __name__)
 
@@ -14,3 +14,4 @@ blueprint.register_blueprint(
 blueprint.register_blueprint(course.blueprint, url_prefix="/course")
 blueprint.register_blueprint(student.blueprint, url_prefix="/student")
 blueprint.register_blueprint(program.blueprint, url_prefix="/program")
+blueprint.register_blueprint(timeline.blueprint, url_prefix="/timeline")

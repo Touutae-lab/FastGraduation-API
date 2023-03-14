@@ -21,8 +21,8 @@ class Suggestion(Route):
     def get(self, *args, **kwargs) -> dict:
         session: SessionContainer = g.supertokens
 
-
         return {"A": session.get_user_id()}
+
 
 # Random Course that have equivilent weight
 def randomFromAction(id):
@@ -35,7 +35,7 @@ def findCourse():
 
 
 @blueprint.route("/suggest", methods=["GET"])
-# @verify_session()
+@verify_session()
 def postSuggest() -> dict:
     """_summary_
     the request body must look like this
