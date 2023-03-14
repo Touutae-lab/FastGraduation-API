@@ -62,6 +62,7 @@ CORS(
 app.register_blueprint(admin.blueprint, url_prefix="/admin")
 app.register_blueprint(student.blueprint, url_prefix="/student")
 
+
 # This is required since if this is not there, then OPTIONS requests for
 # the APIs exposed by the supertokens' Middleware will return a 404
 @app.route("/", defaults={"u_path": ""})
