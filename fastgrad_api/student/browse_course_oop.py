@@ -1,16 +1,19 @@
 from typing import List
 
-from database import db
+from database import db_oop as db
 from flask import Blueprint, request
 from route import Route, register_route
+from supertokens_python.recipe.session.framework.flask import verify_session
 
-blueprint: Blueprint = Blueprint("test_select_oop", __name__)
+blueprint: Blueprint = Blueprint("browse_course_oop", __name__)
 
 
-class SelectCourse(Route):
+class BrowseCourse(Route):
     def __init__(self) -> None:
-        super().__init__(path="/sql_select_oop", methods=["GET"])
 
+        super().__init__(path="/browse_course_oop", methods=["GET"])
+
+    @verify_session()
     def get(self, *args, **kwargs):
         query = "SELECT * FROM course"
         params = request.args.to_dict()
@@ -30,21 +33,26 @@ class SelectCourse(Route):
             return {"status": "error", "msg": "Not Found "}
 
         cols = [i[0] for i in cursor.description]
-
+        col_cat = [i[0] for i in cursor.description]
+        res_cat = cursor.fetchall()
         return {
             "status": "success",
             "msg": "OK",
             "data": [
                 {col: row[i] for i, col in enumerate(cols)} for row in result
             ],
+            "categories": [
+                {col: row[i] for i, col in enumerate(col_cat)}
+                for row in res_cat
+            ],
         }
 
-    def post(self, *args, **kwargs):
-        """Leave this blank to indicate that there is really no use of POST method here"""
+    # def post(self, *args, **kwargs):
+    #     """Leave this blank to indicate that there is really no use of POST method here"""
 
 
 _routes: List[Route] = [
-    SelectCourse(),
+    BrowseCourse(),
 ]
 
 register_route(blueprint, _routes)
