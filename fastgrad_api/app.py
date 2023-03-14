@@ -4,7 +4,6 @@ Getting Started
 
 """
 
-import test
 
 import admin
 import config
@@ -62,7 +61,7 @@ CORS(
 # ********** BLUEPRINT REGISTERING **********
 app.register_blueprint(admin.blueprint, url_prefix="/admin")
 app.register_blueprint(student.blueprint, url_prefix="/student")
-app.register_blueprint(test.blueprint, url_prefix="/test")
+
 
 # This is required since if this is not there, then OPTIONS requests for
 # the APIs exposed by the supertokens' Middleware will return a 404

@@ -103,7 +103,6 @@ def override_email_password_apis(
         SignUpPostEmailAlreadyExistsError,
         GeneralErrorResponse,
     ]:
-
         # First we call the original implementation of signInPOST.
         response: Union[
             SignUpPostOkResult,

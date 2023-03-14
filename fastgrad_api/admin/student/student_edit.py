@@ -35,7 +35,6 @@ async def student_browse(student_id) -> dict:
             return msg
 
         if data.get("mname_en") is None:
-
             query = """UPDATE student
                     INNER JOIN user ON student.user_id =user.user_id
                     SET fname_en='%(fname_en)s',mname_en =null ,lname_en='%(lname_en)s',fname_th='%(fname_th)s',mname_th=null,lname_th='%(lname_th)s',email='%(email)s'
