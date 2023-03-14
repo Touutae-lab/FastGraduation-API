@@ -4,10 +4,10 @@ from . import (
     browse_course,
     browse_course_oop,
     edit_enrollment_oop,
+    missing_credits,
     sql_update,
     suggest,
     update_enrollment,
-    missing_credits,
 )
 
 blueprint: Blueprint = Blueprint("student", __name__)
