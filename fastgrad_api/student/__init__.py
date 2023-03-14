@@ -7,6 +7,7 @@ from . import (
     sql_update,
     suggest,
     update_enrollment,
+    missing_credits,
 )
 
 blueprint: Blueprint = Blueprint("student", __name__)

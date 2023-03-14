@@ -1,7 +1,4 @@
-from typing import List
-
-from database import db_oop as db
-from flask import Blueprint, g, request
+from flask import Blueprint, g
 from route import Route, register_route
 from student.utility import EnrollmentDelegate
 from supertokens_python.recipe.session import SessionContainer

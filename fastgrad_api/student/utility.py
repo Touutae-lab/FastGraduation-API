@@ -3,7 +3,6 @@ Utility Functions
 #################
 
 """
-import random
 
 from database import db
 
